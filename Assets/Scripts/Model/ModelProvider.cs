@@ -22,6 +22,17 @@ namespace mecoinpy
                 return newModel;
             }
         }
+        public static T Get<T>()
+        {
+            if(models.OfType<T>().FirstOrDefault() is T model)
+            {
+                return model;
+            }
+            else
+            {
+                return default;
+            }
+        }
 
         public static void Clear()
         {

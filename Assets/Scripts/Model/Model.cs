@@ -10,6 +10,11 @@ namespace mecoinpy
 
     public abstract class BaseModelFactory<T> where T: IModel
     {
+        protected static GameObject _gameObject = default;
+        protected BaseModelFactory(GameObject go)
+        {
+            _gameObject = go;
+        }
         public abstract T Create();
     }
 }
