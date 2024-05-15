@@ -1,0 +1,19 @@
+{
+    "name": "mecoinpy.DataManager",
+    "rootNamespace": "mecoinpy",
+    "references": [
+        "GUID:9db5b4309702f4aabbf17ae4364f3a92",
+        "GUID:b4d86eb675f9f4dbab98c0bdd3dee0e2",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:593a5b492d29ac6448b1ebf7f035ef33"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,20 @@
+{
+    "name": "mecoinpy.ViewModel",
+    "rootNamespace": "mecoinpy",
+    "references": [
+        "GUID:9db5b4309702f4aabbf17ae4364f3a92",
+        "GUID:5cfab7bba717e404a9d1a9b839385e21",
+        "GUID:b4d86eb675f9f4dbab98c0bdd3dee0e2",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
