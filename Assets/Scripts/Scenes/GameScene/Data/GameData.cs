@@ -11,6 +11,10 @@ namespace mecoinpy.Game
     {
         private PhysicsObject _physicsObject = default;
         public PhysicsObject PhysicsObject => _physicsObject;
+        
+        //ジャンプ速度
+        private float _jumpVelocity = GameConst.Initialize.PlayerJumpVelocity;
+        public float JumpVelocity => _jumpVelocity;
         //所持ジャンプ玉
         private int _jumpBall = 0;
         public int JumpBall => _jumpBall;

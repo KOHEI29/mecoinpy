@@ -1,0 +1,48 @@
+{
+    "name": "mecoinpy.Test",
+    "rootNamespace": "mecoinpy",
+    "references": [
+        "GUID:9db5b4309702f4aabbf17ae4364f3a92",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:b4d86eb675f9f4dbab98c0bdd3dee0e2",
+        "GUID:5cfab7bba717e404a9d1a9b839385e21",
+        "GUID:614f8610596114fd6885e5b9760d1c8f",
+        "GUID:98f3a2c61651645afa45adaf97b14a6f"
+    ],
+    "includePlatforms": [
+        "Android",
+        "Editor",
+        "EmbeddedLinux",
+        "GameCoreScarlett",
+        "GameCoreXboxOne",
+        "iOS",
+        "LinuxStandalone64",
+        "CloudRendering",
+        "macOSStandalone",
+        "PS4",
+        "PS5",
+        "QNX",
+        "Stadia",
+        "Switch",
+        "tvOS",
+        "WSA",
+        "VisionOS",
+        "WebGL",
+        "WindowsStandalone32",
+        "WindowsStandalone64",
+        "XboxOne"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "DOTween.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

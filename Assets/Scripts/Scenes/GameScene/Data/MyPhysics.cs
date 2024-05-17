@@ -20,8 +20,8 @@ namespace mecoinpy.Game
         //座標
         public Vector2 Position => _gameObject.Position;
         //速度
-        private Vector2 _velocity = Vector2.zero;
-        public Vector2 Velocity => _velocity;
+        //private Vector2 _velocity = Vector2.zero;
+        public Vector2 Velocity{get; set;} = Vector2.zero;
         //加速度
         private Vector2 _acceleration = Vector2.zero;
         public Vector2 Acceleration => _acceleration;
@@ -42,7 +42,7 @@ namespace mecoinpy.Game
             _acceleration.y -= GameConst.DefaultGravityAcceleration - LiftForce;
             _force = Vector2.zero;
 
-            _velocity += Acceleration * time;
+            Velocity += Acceleration * time;
 
             _gameObject.Position += Velocity * time;
         }
@@ -53,10 +53,10 @@ namespace mecoinpy.Game
 
             _force += force;
         }
-        //着地した。バウンドしないゲームなので、Vyを0にするのみ
+        //着地した。滑ったりバウンドしないゲームなので、Vを0にするのみ
         public void Grounded()
         {
-            _velocity.y = 0f;
+            Velocity = Vector2.zero;
         }
     }
 }

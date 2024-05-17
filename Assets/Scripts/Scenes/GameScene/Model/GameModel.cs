@@ -9,8 +9,15 @@ namespace mecoinpy.Game
     {
         //ステージデータ
         StageData StageData{get;}
-        //Transform
+        //GameObject
         IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject{get;}
+        //引っ張っている方向
+        IReadOnlyReactiveProperty<Vector2> PullingDirection{get;}
+
+        //ボタン関連の処理。スワイプとタップの判定などはViewModelでやるべき？
+        void OnButtonDown(Vector2 mouse);
+        void OnButton(Vector2 mouse);
+        void OnButtonUp(Vector2 mouse);
     }
     public class GameModel : IGameModel
     {
@@ -25,11 +32,14 @@ namespace mecoinpy.Game
         private float _timeScale = 1f;
         //重力加速度
         private float _gAcceleration = GameConst.DefaultGravityAcceleration;
-        //座標
-        private ReactiveProperty<MyGameObject> _playerPosition = new ReactiveProperty<MyGameObject>(default);
-        public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerPosition;
-
-        private Vector2 _pullingDirection = new Vector2();
+        //GameObject
+        private ReactiveProperty<MyGameObject> _playerGameObject = new ReactiveProperty<MyGameObject>(default);
+        public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerGameObject;
+        //ボタンダウンの開始位置
+        private Vector2 _mouseStartPosition = Vector2.zero;
+        //引っ張っている方向
+        private Vector2ReactiveProperty _pullingDirection = new Vector2ReactiveProperty(Vector2.zero);
+        public IReadOnlyReactiveProperty<Vector2> PullingDirection => _pullingDirection;
 
         internal GameModel(GameObject go)
         {
@@ -39,7 +49,7 @@ namespace mecoinpy.Game
             _playerData = new PlayerData();
             _stageData = new StageData();
 
-            _playerPosition.Value = _playerData.PhysicsObject;
+            _playerGameObject.Value = _playerData.PhysicsObject;
 
             //毎フレームの処理を開始
             Observable.EveryUpdate()
@@ -59,11 +69,50 @@ namespace mecoinpy.Game
             //プレイヤーとステージ
             if(_playerData.IsGrounded(StageData.StageObjects))
             {
-                
-            }
 
+            }
+            
             //通知        
-            _playerPosition.SetValueAndForceNotify(_playerData.PhysicsObject);
+            _playerGameObject.SetValueAndForceNotify(_playerData.PhysicsObject);
+        }
+        bool _jumping = false;
+        //ジャンプを試みる
+        private void TryJump()
+        {
+            _playerData.PhysicsObject.Physics.Velocity = _pullingDirection.Value.normalized * _playerData.JumpVelocity;
+        }
+
+
+        //ボタン関連の処理。スワイプとタップの判定などはViewModelでやるべき？
+        public void OnButtonDown(Vector2 mouse)
+        {
+            _mouseStartPosition = mouse;
+        }
+        public void OnButton(Vector2 mouse)
+        {
+            if((_mouseStartPosition - mouse).SqrMagnitude() > GameConst.SwipeThresholdSqr)
+            {
+                _pullingDirection.Value = _mouseStartPosition - mouse;
+            }
+            else
+            {
+                _pullingDirection.Value = Vector2.zero;
+            }
+        }
+        public void OnButtonUp(Vector2 mouse)
+        {
+            if(PullingDirection.Value.SqrMagnitude() > 0f)
+            {
+                //ジャンプ
+                TryJump();
+            }
+            else
+            {
+                //ストンプ
+                Debug.Log("Try Stamp");
+            }
+            _pullingDirection.Value = Vector2.zero;
+            _mouseStartPosition = default;
         }
     }
 
