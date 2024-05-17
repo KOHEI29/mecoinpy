@@ -7,8 +7,10 @@ using UnityEngine.PlayerLoop;
 namespace mecoinpy.Game
 {
     //プレイヤーのデータ
-    public class PlayerData : PhysicsObject
+    public class PlayerData
     {
+        private PhysicsObject _physicsObject = default;
+        public PhysicsObject PhysicsObject => _physicsObject;
         //所持ジャンプ玉
         private int _jumpBall = 0;
         public int JumpBall => _jumpBall;
@@ -17,11 +19,34 @@ namespace mecoinpy.Game
         public int JumpBallMax => _jumpBallMax;
 
         //コンストラクタ
-        public PlayerData() : base(new MyPhysics(), new AABB(new Vector2(-0.5f, -0.5f), new Vector2(0.5f, 0.5f)))
+        public PlayerData()
         {
             _jumpBall = JumpBallMax;
+
+            _physicsObject = new PhysicsObject();
+            _physicsObject.SetCollider(new AABB(new Vector2(-0.5f, -0.5f), new Vector2(0.5f, 0.5f), _physicsObject));
+        }
+
+        public bool IsGrounded(StageObject[] objects)
+        {
+            for(int i = 0; i < objects.Length; i++)
+            {
+                if(PhysicsObject.Collider.CheckCollision(objects[i].ColliderObject.Collider, out Vector2 contactVector))
+                {
+                    if(contactVector.y > 0f)
+                    {
+                        //着地した。
+                        var temp = PhysicsObject.Position + contactVector;
+                        PhysicsObject.Position = temp;
+                        PhysicsObject.Physics.Grounded();
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
+
     //ステージデータ
     public class StageData
     {
@@ -35,7 +60,7 @@ namespace mecoinpy.Game
             _stageObjects[0] = new StageObject(StageObject.ObjectType.WALL, new Vector2(0f, -10f), new Vector2(10f, 1f));
         }
     }
-    public class StageObject : PhysicsObject
+    public class StageObject
     {
         public enum ObjectType
         {
@@ -45,13 +70,15 @@ namespace mecoinpy.Game
         }
         private ObjectType _type = ObjectType.DEFAULT;
         public ObjectType Type => _type;
-        private Vector2 _scale = Vector2.zero;
-        public Vector2 Scale => _scale;
-        public StageObject(ObjectType t, Vector2 position, Vector2 scale) : base(MyPhysics.KinematicObject(position), default)
+        private ColliderObject _colliderObject = default;
+        public ColliderObject ColliderObject => _colliderObject;
+        public StageObject(ObjectType t, Vector2 position, Vector2 scale)
         {
             _type = t;
-            _scale = scale;
-            _collider = new AABB(position-scale*0.5f, position+scale*0.5f);
+            _colliderObject = new ColliderObject();
+            ColliderObject.Position = position;
+            ColliderObject.Scale = scale;
+            ColliderObject.SetCollider(new AABB(-scale*0.5f, scale*0.5f, ColliderObject));
         }
     }
 }

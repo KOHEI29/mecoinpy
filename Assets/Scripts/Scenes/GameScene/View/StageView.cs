@@ -24,8 +24,8 @@ namespace mecoinpy.Game
             {
                 var data = viewModel.StageObjects.ElementAt(i);
                 var go = CreateOrDequeue();
-                go.transform.position = data.Physics.Position;
-                go.transform.localScale = new Vector3(data.Scale.x, data.Scale.y, 1f);
+                go.transform.position = data.ColliderObject.Position;
+                go.transform.localScale = new Vector3(data.ColliderObject.Scale.x, data.ColliderObject.Scale.y, 1f);
             }
 
             //更新（追加でオブジェクトを作る）

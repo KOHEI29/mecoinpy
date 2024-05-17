@@ -5,7 +5,14 @@ namespace mecoinpy.Game
 {
     public abstract class MyCollider
     {
+        private MyGameObject _transform = default;
+        public MyGameObject GameObject => _transform;
+        public MyCollider(MyGameObject go)
+        {
+            _transform = go;
+        }
         public abstract bool CheckCollision(MyCollider other);
+        public abstract bool CheckCollision(MyCollider other, out Vector2 contactVector);
     }
 
     public class AABB : MyCollider
@@ -13,7 +20,7 @@ namespace mecoinpy.Game
         public Vector2 Min { get; set; }
         public Vector2 Max { get; set; }
 
-        public AABB(Vector2 min, Vector2 max)
+        public AABB(Vector2 min, Vector2 max, MyGameObject go) : base(go)
         {
             Min = min;
             Max = max;
@@ -30,40 +37,91 @@ namespace mecoinpy.Game
 
             return false;
         }
+        public override bool CheckCollision(MyCollider other, out Vector2 contactVector)
+        {
+            if (other is AABB aabb)
+            {
+                return CheckCollision(this, aabb, out contactVector);
+            }
+            else
+            {
+                contactVector = Vector2.zero;
+            }
+            if (other is Circle circle)
+                return CheckCollision(circle, this);
+            if (other is Capsule capsule)
+                return CheckCollision(this, capsule);
+
+            return false;
+        }
 
         private static bool CheckCollision(AABB a, AABB b)
         {
+            var amax = a.Max + a.GameObject.Position;
+            var amin = a.Min + a.GameObject.Position;
+            var bmax = b.Max + b.GameObject.Position;
+            var bmin = b.Min + b.GameObject.Position;
             // AABB同士の衝突判定
-            return (a.Min.x <= b.Max.x && a.Max.x >= b.Min.x &&
-                    a.Min.y <= b.Max.y && a.Max.y >= b.Min.y);
+            return (amin.x <= bmax.x && amax.x >= bmin.x &&
+                    amin.y <= bmax.y && amax.y >= bmin.y);
+        }
+        //競合のベクターも返す衝突判定
+        private static bool CheckCollision(AABB a, AABB b, out Vector2 contactVector)
+        {
+            contactVector = Vector2.zero;
+
+            if(CheckCollision(a, b))
+            {
+                var amax = a.Max + a.GameObject.Position;
+                var amin = a.Min + a.GameObject.Position;
+                var bmax = b.Max + b.GameObject.Position;
+                var bmin = b.Min + b.GameObject.Position;
+
+                //衝突するので、方向を計算
+                float dx = Math.Min(amax.x - bmin.x, bmax.x - amin.x);
+                float dy = Math.Min(amax.y - bmin.y, bmax.y - amin.y);
+
+                // 最小の交差量を持つ方向を接触方向とする
+                //要調整。
+                if (dx < dy)
+                {
+                    //contactVector.x = amax.x > bmin.x ? a.Max.x : -bmin.x;
+                    contactVector.x = amax.x > bmin.x ? dx : -dx;
+                }
+                else
+                {
+                    //contactVector.y = amax.y > bmin.y ? a.Max.y : -bmin.y;
+                    contactVector.y = amax.y > bmin.y ? dy : -dy;
+                }
+                
+                return true;
+            }
+            return false;            
         }
 
         internal static bool CheckCollision(Circle circle, AABB aabb)
         {
+            var circlecenter = circle.Center + circle.GameObject.Position;
+            var aabbmax = aabb.Max + aabb.GameObject.Position;
+            var aabbmin = aabb.Min + aabb.GameObject.Position;
             // 円とAABBの衝突判定
-            float closestX = Math.Max(aabb.Min.x, Math.Min(circle.Center.x, aabb.Max.x));
-            float closestY = Math.Max(aabb.Min.y, Math.Min(circle.Center.y, aabb.Max.y));
+            float closestX = Math.Max(aabbmin.x, Math.Min(circlecenter.x, aabbmax.x));
+            float closestY = Math.Max(aabbmin.y, Math.Min(circlecenter.y, aabbmax.y));
 
-            float distanceX = circle.Center.x - closestX;
-            float distanceY = circle.Center.y - closestY;
+            float distanceX = circlecenter.x - closestX;
+            float distanceY = circlecenter.y - closestY;
 
             return (distanceX * distanceX + distanceY * distanceY) < (circle.Radius * circle.Radius);
         }
 
         internal static bool CheckCollision(AABB aabb, Capsule capsule)
         {
+            var aabbmax = aabb.Max + aabb.GameObject.Position;
+            var aabbmin = aabb.Min + aabb.GameObject.Position;
             // AABBとカプセルの衝突判定
             // カプセルのセグメントをAABBの範囲でクランプして最も近い点を求め、そこからの距離をチェック
-            Vector2 closestPoint = ClosestPointOnLineSegment(capsule.Start, capsule.End, aabb.Min, aabb.Max);
-            return Vector2.Distance(closestPoint, aabb.Min) <= capsule.Radius;
-        }
-
-        private static Vector2 ClosestPointOnLineSegment(Vector2 segmentStart, Vector2 segmentEnd, Vector2 boxMin, Vector2 boxMax)
-        {
-            Vector2 segment = segmentEnd - segmentStart;
-            Vector2 toMin = boxMin - segmentStart;
-            float t = Mathf.Clamp(Vector2.Dot(toMin, segment) / segment.sqrMagnitude, 0, 1);
-            return segmentStart + segment * t;
+            Vector2 closestPoint = Util.ClosestPointOnLineSegment(capsule.Start + capsule.GameObject.Position, capsule.End + capsule.GameObject.Position, aabbmin, aabbmax);
+            return Vector2.Distance(closestPoint, aabbmin) <= capsule.Radius;
         }
     }
 
@@ -72,7 +130,7 @@ namespace mecoinpy.Game
         public Vector2 Center { get; set; }
         public float Radius { get; set; }
 
-        public Circle(Vector2 center, float radius)
+        public Circle(Vector2 center, float radius, MyGameObject go) : base(go)
         {
             Center = center;
             Radius = radius;
@@ -89,12 +147,19 @@ namespace mecoinpy.Game
 
             return false;
         }
+        public override bool CheckCollision(MyCollider other, out Vector2 contactVector)
+        {
+            contactVector = Vector2.zero;
+            return CheckCollision(other);
+        }
 
         private static bool CheckCollision(Circle a, Circle b)
         {
+            var acenter = a.Center + a.GameObject.Position;
+            var bcenter = b.Center + b.GameObject.Position;
             // 円同士の衝突判定
-            float distanceX = a.Center.x - b.Center.x;
-            float distanceY = a.Center.y - b.Center.y;
+            float distanceX = acenter.x - bcenter.x;
+            float distanceY = acenter.y - bcenter.y;
             float radiusSum = a.Radius + b.Radius;
 
             return (distanceX * distanceX + distanceY * distanceY) < (radiusSum * radiusSum);
@@ -102,21 +167,14 @@ namespace mecoinpy.Game
 
         internal static bool CheckCollision(Circle circle, Capsule capsule)
         {
+            var circlecenter = circle.Center + circle.GameObject.Position;
             // 円とカプセルの衝突判定
-            Vector2 closestPoint = ClosestPointOnLineSegment(circle.Center, capsule.Start, capsule.End);
-            float distanceX = circle.Center.x - closestPoint.x;
-            float distanceY = circle.Center.y - closestPoint.y;
+            Vector2 closestPoint = Util.ClosestPointOnLineSegment(circlecenter, capsule.Start + capsule.GameObject.Position, capsule.End + capsule.GameObject.Position);
+            float distanceX = circlecenter.x - closestPoint.x;
+            float distanceY = circlecenter.y - closestPoint.y;
 
             float combinedRadius = capsule.Radius + circle.Radius;
             return (distanceX * distanceX + distanceY * distanceY) < (combinedRadius * combinedRadius);
-        }
-
-        private static Vector2 ClosestPointOnLineSegment(Vector2 point, Vector2 segmentStart, Vector2 segmentEnd)
-        {
-            Vector2 segment = segmentEnd - segmentStart;
-            Vector2 toPoint = point - segmentStart;
-            float t = Mathf.Clamp(Vector2.Dot(toPoint, segment) / segment.sqrMagnitude, 0, 1);
-            return segmentStart + segment * t;
         }
     }
 
@@ -126,7 +184,7 @@ namespace mecoinpy.Game
         public Vector2 End { get; set; }
         public float Radius { get; set; }
 
-        public Capsule(Vector2 start, Vector2 end, float radius)
+        public Capsule(Vector2 start, Vector2 end, float radius, MyGameObject go) : base(go)
         {
             Start = start;
             End = end;
@@ -144,12 +202,17 @@ namespace mecoinpy.Game
 
             return false;
         }
+        public override bool CheckCollision(MyCollider other, out Vector2 contactVector)
+        {
+            contactVector = Vector2.zero;
+            return CheckCollision(other);
+        }
 
         private static bool CheckCollision(Capsule a, Capsule b)
         {
             // カプセル同士の衝突判定
             float combinedRadius = a.Radius + b.Radius;
-            return ClosestDistanceBetweenSegments(a.Start, a.End, b.Start, b.End) < (combinedRadius * combinedRadius);
+            return ClosestDistanceBetweenSegments(a.Start + a.GameObject.Position, a.End + a.GameObject.Position, b.Start + b.GameObject.Position, b.End + b.GameObject.Position) < (combinedRadius * combinedRadius);
         }
 
         private static float ClosestDistanceBetweenSegments(Vector2 aStart, Vector2 aEnd, Vector2 bStart, Vector2 bEnd)

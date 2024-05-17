@@ -9,8 +9,8 @@ namespace mecoinpy.Game
     {
         //ステージデータ
         StageData StageData{get;}
-        //座標
-        IReadOnlyReactiveProperty<Vector2> PlayerPosition{get;}
+        //Transform
+        IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject{get;}
     }
     public class GameModel : IGameModel
     {
@@ -26,8 +26,8 @@ namespace mecoinpy.Game
         //重力加速度
         private float _gAcceleration = GameConst.DefaultGravityAcceleration;
         //座標
-        private Vector2ReactiveProperty _playerPosition = new Vector2ReactiveProperty(GameConst.Initialize.PlayerPosition);
-        public IReadOnlyReactiveProperty<Vector2> PlayerPosition => _playerPosition;
+        private ReactiveProperty<MyGameObject> _playerPosition = new ReactiveProperty<MyGameObject>(default);
+        public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerPosition;
 
         private Vector2 _pullingDirection = new Vector2();
 
@@ -39,7 +39,7 @@ namespace mecoinpy.Game
             _playerData = new PlayerData();
             _stageData = new StageData();
 
-            _playerPosition = new Vector2ReactiveProperty(GameConst.Initialize.PlayerPosition);
+            _playerPosition.Value = _playerData.PhysicsObject;
 
             //毎フレームの処理を開始
             Observable.EveryUpdate()
@@ -52,8 +52,18 @@ namespace mecoinpy.Game
         private void PhysicsUpdate()
         {
             float time = _timeScale * Time.deltaTime;
-            _playerData.Physics.Update(time);
-            _playerPosition.Value = _playerData.Physics.Position;
+            //座標更新
+            _playerData.PhysicsObject.Physics.Update(time);
+
+            //当たり判定
+            //プレイヤーとステージ
+            if(_playerData.IsGrounded(StageData.StageObjects))
+            {
+                
+            }
+
+            //通知        
+            _playerPosition.SetValueAndForceNotify(_playerData.PhysicsObject);
         }
     }
 

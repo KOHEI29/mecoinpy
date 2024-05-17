@@ -10,13 +10,22 @@ namespace mecoinpy.Game
         private IGameModel _model = default;
 
         //座標
-        public IReadOnlyReactiveProperty<Vector2> PlayerPosition => _model.PlayerPosition;
+        private Vector2ReactiveProperty _position = new Vector2ReactiveProperty(Vector2.zero);
+        public IReadOnlyReactiveProperty<Vector2> PlayerPosition => _position;
 
         internal PlayerViewModel(GameObject view) : base(view)
         {
             //***Debug
             //本来はSceneManagerなどでしっかりしたGameObjectから作る
             _model = ModelProvider.Get<IGameModel>(new GameModelFactory(_view));
+
+            _model.PlayerGameObject
+                .Where(x => x != default)
+                .TakeUntilDestroy(_view)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    t._position.Value = x.Position;
+                });
         }
     }
 
