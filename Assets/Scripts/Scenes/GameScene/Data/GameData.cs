@@ -54,37 +54,47 @@ namespace mecoinpy.Game
                 {
                     if(contactVector.y < 0f)
                     {
-                        //着地した。
-                        //壁ジャンプの回数リセット
-                        _wallJumpCount = 0;
-                        var temp = PhysicsObject.Position - contactVector;
-                        PhysicsObject.Position = temp;
-                        PhysicsObject.Physics.Grounded();
-                        //ストンプしていた場合、真上に跳ね上がる
-                        if(State.Value == GameEnum.PlayerState.STOMPING)
+                        //上昇中は着地しない
+                        if(PhysicsObject.Physics.Velocity.y < 1f)
                         {
-                            PhysicsObject.Physics.Velocity = GameConst.StompBoundVelocity;
+                            //着地した。
+                            //壁ジャンプの回数リセット
+                            _wallJumpCount = 0;
+                            var temp = PhysicsObject.Position - contactVector;
+                            PhysicsObject.Position = temp;
+                            PhysicsObject.Physics.Grounded();
+                            //ストンプしていた場合、真上に跳ね上がる
+                            if(State.Value == GameEnum.PlayerState.STOMPING)
+                            {
+                                PhysicsObject.Physics.Velocity = GameConst.StompBoundVelocity;
+                            }
+                            _state.Value = GameEnum.PlayerState.IDLE;
                         }
-                        _state.Value = GameEnum.PlayerState.IDLE;
                         return true;
                     }
                     else if(contactVector.y > 0f)
                     {
-                        //天井にぶつかった。
-                        var temp = PhysicsObject.Position - contactVector;
-                        PhysicsObject.Position = temp;
-                        PhysicsObject.Physics.HitCeil();
+                        if(objects[i].Type == StageObject.ObjectType.WALL)
+                        {
+                            //天井にぶつかった。
+                            var temp = PhysicsObject.Position - contactVector;
+                            PhysicsObject.Position = temp;
+                            PhysicsObject.Physics.HitCeil();
+                        }
                     }
                     else if(contactVector.x != 0f)
                     {
-                        //壁に当たった
-                        var temp = PhysicsObject.Position - contactVector;
-                        PhysicsObject.Position = temp;
-                        if(_wallJumpCount < _wallJumpMax)
+                        if(objects[i].Type == StageObject.ObjectType.WALL)
                         {
-                            _wallJumpCount++;
-                            //壁ジャンプする
-                            WallJump(contactVector.x > 0f ? GameConst.RightWallJumpingVelocity : GameConst.LeftWallJumpingVelocity);
+                            //壁に当たった
+                            var temp = PhysicsObject.Position - contactVector;
+                            PhysicsObject.Position = temp;
+                            if(_wallJumpCount < _wallJumpMax)
+                            {
+                                _wallJumpCount++;
+                                //壁ジャンプする
+                                WallJump(contactVector.x > 0f ? GameConst.RightWallJumpingVelocity : GameConst.LeftWallJumpingVelocity);
+                            }
                         }
                     }
 
@@ -173,7 +183,7 @@ namespace mecoinpy.Game
             _stageObjects[0] = new StageObject(StageObject.ObjectType.WALL, new Vector2(0f, -10f), new Vector2(10f, 1f));
             _stageObjects[1] = new StageObject(StageObject.ObjectType.WALL, new Vector2(-5f, 0f), new Vector2(3f, 21f));
             _stageObjects[2] = new StageObject(StageObject.ObjectType.WALL, new Vector2(5f, 0f), new Vector2(3f, 21f));
-            _stageObjects[3] = new StageObject(StageObject.ObjectType.WALL, new Vector2(0f, 5f), new Vector2(10f, 1f));
+            _stageObjects[3] = new StageObject(StageObject.ObjectType.STEP, new Vector2(0f, 5f), new Vector2(10f, 1f));
         }
     }
     public class StageObject
