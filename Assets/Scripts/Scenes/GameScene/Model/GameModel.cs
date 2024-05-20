@@ -10,6 +10,9 @@ namespace mecoinpy.Game
     {
         //ステージデータ
         StageData StageData{get;}
+        //プレイヤーのジャンプ力（エイムの計算に使用）
+        float PlayerJumpVelocity{get;}
+
         //GameObject
         IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject{get;}
         //プレイヤーの状態
@@ -31,11 +34,11 @@ namespace mecoinpy.Game
         //ステージデータ
         private StageData _stageData = default;
         public StageData StageData => _stageData;
+        //プレイヤーのジャンプ力（エイムの計算に使用）
+        public float PlayerJumpVelocity => _playerData.JumpVelocity;
 
         //時間の割合
         private float _timeScale = 1f;
-        //重力加速度
-        private float _gAcceleration = GameConst.DefaultGravityAcceleration;
         //GameObject
         private ReactiveProperty<MyGameObject> _playerGameObject = new ReactiveProperty<MyGameObject>(default);
         public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerGameObject;
@@ -93,7 +96,7 @@ namespace mecoinpy.Game
         {
             if((_mouseStartPosition - mouse).SqrMagnitude() > GameConst.SwipeThresholdSqr)
             {
-                _pullingDirection.Value = _mouseStartPosition - mouse;
+                _pullingDirection.Value = (_mouseStartPosition - mouse).normalized;
             }
             else
             {
@@ -105,7 +108,7 @@ namespace mecoinpy.Game
             if(PullingDirection.Value.SqrMagnitude() > 0f)
             {
                 //ジャンプ
-                _playerData.TryJump(PullingDirection.Value.normalized);
+                _playerData.TryJump(PullingDirection.Value);
             }
             else
             {

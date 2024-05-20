@@ -30,5 +30,10 @@ namespace mecoinpy.Game
         //タップとスワイプのしきい値（スクリーン座標）
         public const float SwipeThreshold = 0.5f;
         public const float SwipeThresholdSqr = SwipeThreshold * SwipeThreshold;
+
+        //エイムガイドの白いパーツの数
+        public const int AimPartsCount = 8;
+        //エイムガイドの白いパーツの間隔
+        public const float AimPartsOffset = 0.1f;
     }
 }
