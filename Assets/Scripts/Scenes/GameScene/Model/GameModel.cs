@@ -82,12 +82,6 @@ namespace mecoinpy.Game
             //通知        
             _playerGameObject.SetValueAndForceNotify(_playerData.PhysicsObject);
         }
-        bool _jumping = false;
-        //ジャンプを試みる
-        private void TryJump()
-        {
-            _playerData.PhysicsObject.Physics.Velocity = _pullingDirection.Value.normalized * _playerData.JumpVelocity;
-        }
 
 
         //ボタン関連の処理。スワイプとタップの判定などはViewModelでやるべき？
