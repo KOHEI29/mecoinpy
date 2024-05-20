@@ -35,7 +35,7 @@ namespace mecoinpy.Game
         public PlayerData(GameObject gameObject)
         {
             _gameObject = gameObject;
-            _state.Value = GameEnum.PlayerState.IDLE;
+            _state.Value = GameEnum.PlayerState.JUMPING;
             _jumpBall = JumpBallMax;
 
             _physicsObject = new PhysicsObject();
@@ -51,10 +51,15 @@ namespace mecoinpy.Game
                     if(contactVector.y > 0f)
                     {
                         //着地した。
-                        _state.Value = GameEnum.PlayerState.IDLE;
                         var temp = PhysicsObject.Position + contactVector;
                         PhysicsObject.Position = temp;
                         PhysicsObject.Physics.Grounded();
+                        //ストンプしていた場合、真上に跳ね上がる
+                        if(State.Value == GameEnum.PlayerState.STOMPING)
+                        {
+                            PhysicsObject.Physics.Velocity = GameConst.StompBoundVecolity;
+                        }
+                        _state.Value = GameEnum.PlayerState.IDLE;
                         return true;
                     }
                 }
@@ -80,6 +85,29 @@ namespace mecoinpy.Game
                             t._jumpPower = Vector2.zero;
                             t._state.Value = GameEnum.PlayerState.JUMPING;
                         });
+                return true;
+            }
+            return false;
+        }
+        //ストンプを試みる
+        public bool TryStomp()
+        {
+            if(State.Value == GameEnum.PlayerState.JUMPING)
+            {
+                //ストンプ構え状態に
+                _state.Value = GameEnum.PlayerState.STOMPSTANDBY;
+                _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
+                Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
+                        .TakeUntilDestroy(_gameObject)
+                        .SubscribeWithState(this, static (x, t) =>
+                        {
+                            //ストンプする
+                            t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
+                            t.PhysicsObject.Physics.Velocity = GameConst.StompVecolity;
+                            t._state.Value = GameEnum.PlayerState.STOMPING;
+                        });
+
+                return true;
             }
             return false;
         }

@@ -111,6 +111,7 @@ namespace mecoinpy.Game
             {
                 //ストンプ
                 Debug.Log("Try Stamp");
+                _playerData.TryStomp();
             }
             _pullingDirection.Value = Vector2.zero;
             _mouseStartPosition = default;

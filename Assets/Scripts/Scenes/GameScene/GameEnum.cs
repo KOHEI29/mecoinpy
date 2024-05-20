@@ -12,6 +12,8 @@ namespace mecoinpy.Game
             IDLE = 0,       //特に何もしていない
             JUMPSTANDBY,    //ジャンプ構え
             JUMPING,        //ジャンプ中
+            STOMPSTANDBY,   //ストンプ構え
+            STOMPING,       //ストンプ中
         }
     }
 }
