@@ -52,12 +52,12 @@ namespace mecoinpy.Game
             {
                 if(PhysicsObject.Collider.CheckCollision(objects[i].ColliderObject.Collider, out Vector2 contactVector))
                 {
-                    if(contactVector.y > 0f)
+                    if(contactVector.y < 0f)
                     {
                         //着地した。
                         //壁ジャンプの回数リセット
                         _wallJumpCount = 0;
-                        var temp = PhysicsObject.Position + contactVector;
+                        var temp = PhysicsObject.Position - contactVector;
                         PhysicsObject.Position = temp;
                         PhysicsObject.Physics.Grounded();
                         //ストンプしていた場合、真上に跳ね上がる
@@ -67,6 +67,13 @@ namespace mecoinpy.Game
                         }
                         _state.Value = GameEnum.PlayerState.IDLE;
                         return true;
+                    }
+                    else if(contactVector.y > 0f)
+                    {
+                        //天井にぶつかった。
+                        var temp = PhysicsObject.Position - contactVector;
+                        PhysicsObject.Position = temp;
+                        PhysicsObject.Physics.HitCeil();
                     }
                     else if(contactVector.x != 0f)
                     {
@@ -162,10 +169,11 @@ namespace mecoinpy.Game
         public StageData()
         {
             //***Debug仮データ作成
-            _stageObjects = new StageObject[3];
+            _stageObjects = new StageObject[4];
             _stageObjects[0] = new StageObject(StageObject.ObjectType.WALL, new Vector2(0f, -10f), new Vector2(10f, 1f));
             _stageObjects[1] = new StageObject(StageObject.ObjectType.WALL, new Vector2(-5f, 0f), new Vector2(3f, 21f));
             _stageObjects[2] = new StageObject(StageObject.ObjectType.WALL, new Vector2(5f, 0f), new Vector2(3f, 21f));
+            _stageObjects[3] = new StageObject(StageObject.ObjectType.WALL, new Vector2(0f, 5f), new Vector2(10f, 1f));
         }
     }
     public class StageObject

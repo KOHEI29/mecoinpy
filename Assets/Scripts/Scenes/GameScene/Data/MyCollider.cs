@@ -102,12 +102,12 @@ namespace mecoinpy.Game
                     if (amax.y - bmin.y < bmax.y - amin.y)
                     {
                         // 下方向にめり込んでいる
-                        contactVector.y = -(amax.y - bmin.y);
+                        contactVector.y = amax.y - bmin.y;
                     }
                     else
                     {
                         // 上方向にめり込んでいる
-                        contactVector.y = bmax.y - amin.y;
+                        contactVector.y = -(bmax.y - amin.y);
                     }
                 }
                 

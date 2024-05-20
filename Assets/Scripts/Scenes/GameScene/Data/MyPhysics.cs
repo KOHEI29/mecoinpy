@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks.Triggers;
 using UnityEngine;
 
 namespace mecoinpy.Game
@@ -76,10 +77,10 @@ namespace mecoinpy.Game
         {
             Velocity = Vector2.zero;
         }
-        //横から壁に当たった
-        public void HitWall()
-        {
-            Velocity = new Vector2(0f, Velocity.y);
+        //頭をぶつけた。跳ね返りたい
+        public void HitCeil()
+        {            
+            Velocity = new Vector2(Velocity.x, -Velocity.y);
         }
 
 
