@@ -9,15 +9,21 @@ namespace mecoinpy.Game
         public class Initialize
         {
             public static readonly Vector2 PlayerPosition = new Vector2(0f, 0f);
-            public const float PlayerJumpVelocity= 12f;
+            public const float PlayerJumpVelocity = 12f;
+            public const int PlayerWallJumpMax = 1;
         }
 
         //ジャンプ構え状態の長さ(s)
         public const float JumpStandbySeconds = 0.3f;
         //ストンプの速度
-        public static readonly Vector2 StompVecolity = new Vector2(0, -500f);
+        public static readonly Vector2 StompVelocity = new Vector2(0, -500f);
         //ストンプ着地の跳ね上がり速度
-        public static readonly Vector2 StompBoundVecolity = new Vector2(0, 5f);
+        public static readonly Vector2 StompBoundVelocity = new Vector2(0, 5f);
+        //壁ジャンプの速度
+        public const float PlayerWallJumpVelocity = 8f;
+        //壁ジャンプの方向
+        public static readonly Vector2 LeftWallJumpingVelocity = new Vector2(1f,2f).normalized;
+        public static readonly Vector2 RightWallJumpingVelocity = new Vector2(-1f,2f).normalized;
         //重力加速度
         public const float DefaultGravityAcceleration = 9.81f;
 

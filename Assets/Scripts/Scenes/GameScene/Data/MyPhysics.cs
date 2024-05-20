@@ -76,6 +76,11 @@ namespace mecoinpy.Game
         {
             Velocity = Vector2.zero;
         }
+        //横から壁に当たった
+        public void HitWall()
+        {
+            Velocity = new Vector2(0f, Velocity.y);
+        }
 
 
         public enum BodyType

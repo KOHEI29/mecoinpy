@@ -82,16 +82,33 @@ namespace mecoinpy.Game
                 float dy = Math.Min(amax.y - bmin.y, bmax.y - amin.y);
 
                 // 最小の交差量を持つ方向を接触方向とする
-                //要調整。
-                if (dx < dy)
+                if (Mathf.Abs(dx) < Mathf.Abs(dy))
                 {
-                    //contactVector.x = amax.x > bmin.x ? a.Max.x : -bmin.x;
-                    contactVector.x = amax.x > bmin.x ? dx : -dx;
+                    // 左右方向のめり込みが小さい場合
+                    if (amax.x - bmin.x < bmax.x - amin.x)
+                    {
+                        // 左方向にめり込んでいる
+                        contactVector.x = amax.x - bmin.x;
+                    }
+                    else
+                    {
+                        // 右方向にめり込んでいる
+                        contactVector.x = -(bmax.x - amin.x);
+                    }
                 }
                 else
                 {
-                    //contactVector.y = amax.y > bmin.y ? a.Max.y : -bmin.y;
-                    contactVector.y = amax.y > bmin.y ? dy : -dy;
+                    // 上下方向のめり込みが小さい場合
+                    if (amax.y - bmin.y < bmax.y - amin.y)
+                    {
+                        // 下方向にめり込んでいる
+                        contactVector.y = -(amax.y - bmin.y);
+                    }
+                    else
+                    {
+                        // 上方向にめり込んでいる
+                        contactVector.y = bmax.y - amin.y;
+                    }
                 }
                 
                 return true;

@@ -21,6 +21,10 @@ namespace mecoinpy.Game
         //貯められているジャンプ力。速度の形で溜まっている
         private Vector2 _jumpPower = Vector2.zero;
 
+        //壁ジャンプをした回数
+        private int _wallJumpCount = 0;
+        private int _wallJumpMax = GameConst.Initialize.PlayerWallJumpMax;
+
         //ジャンプ速度
         private float _jumpVelocity = GameConst.Initialize.PlayerJumpVelocity;
         public float JumpVelocity => _jumpVelocity;
@@ -51,17 +55,32 @@ namespace mecoinpy.Game
                     if(contactVector.y > 0f)
                     {
                         //着地した。
+                        //壁ジャンプの回数リセット
+                        _wallJumpCount = 0;
                         var temp = PhysicsObject.Position + contactVector;
                         PhysicsObject.Position = temp;
                         PhysicsObject.Physics.Grounded();
                         //ストンプしていた場合、真上に跳ね上がる
                         if(State.Value == GameEnum.PlayerState.STOMPING)
                         {
-                            PhysicsObject.Physics.Velocity = GameConst.StompBoundVecolity;
+                            PhysicsObject.Physics.Velocity = GameConst.StompBoundVelocity;
                         }
                         _state.Value = GameEnum.PlayerState.IDLE;
                         return true;
                     }
+                    else if(contactVector.x != 0f)
+                    {
+                        //壁に当たった
+                        var temp = PhysicsObject.Position - contactVector;
+                        PhysicsObject.Position = temp;
+                        if(_wallJumpCount < _wallJumpMax)
+                        {
+                            _wallJumpCount++;
+                            //壁ジャンプする
+                            WallJump(contactVector.x > 0f ? GameConst.RightWallJumpingVelocity : GameConst.LeftWallJumpingVelocity);
+                        }
+                    }
+
                 }
             }
             return false;
@@ -73,7 +92,7 @@ namespace mecoinpy.Game
             {
                 //ジャンプ構え状態に
                 _state.Value = GameEnum.PlayerState.JUMPSTANDBY;
-                _jumpPower = direction.normalized * JumpVelocity;
+                _jumpPower = direction * JumpVelocity;
                 _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
                 Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
                         .TakeUntilDestroy(_gameObject)
@@ -84,6 +103,8 @@ namespace mecoinpy.Game
                             t.PhysicsObject.Physics.Velocity = t._jumpPower;
                             t._jumpPower = Vector2.zero;
                             t._state.Value = GameEnum.PlayerState.JUMPING;
+                            //壁ジャンプの回数リセット
+                            t._wallJumpCount = 0;
                         });
                 return true;
             }
@@ -103,13 +124,32 @@ namespace mecoinpy.Game
                         {
                             //ストンプする
                             t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
-                            t.PhysicsObject.Physics.Velocity = GameConst.StompVecolity;
+                            t.PhysicsObject.Physics.Velocity = GameConst.StompVelocity;
                             t._state.Value = GameEnum.PlayerState.STOMPING;
                         });
 
                 return true;
             }
             return false;
+        }
+        //壁ジャンプ
+        public void WallJump(Vector2 direction)
+        {
+            _wallJumpCount += 1;
+            //ジャンプ構え状態に
+            _state.Value = GameEnum.PlayerState.JUMPSTANDBY;
+            _jumpPower = direction * GameConst.PlayerWallJumpVelocity;
+            _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
+            Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
+                    .TakeUntilDestroy(_gameObject)
+                    .SubscribeWithState(this, static (x, t) =>
+                    {
+                        //ジャンプする
+                        t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
+                        t.PhysicsObject.Physics.Velocity = t._jumpPower;
+                        t._jumpPower = Vector2.zero;
+                        t._state.Value = GameEnum.PlayerState.JUMPING;
+                    });
         }
     }
 
@@ -122,8 +162,10 @@ namespace mecoinpy.Game
         public StageData()
         {
             //***Debug仮データ作成
-            _stageObjects = new StageObject[1];
+            _stageObjects = new StageObject[3];
             _stageObjects[0] = new StageObject(StageObject.ObjectType.WALL, new Vector2(0f, -10f), new Vector2(10f, 1f));
+            _stageObjects[1] = new StageObject(StageObject.ObjectType.WALL, new Vector2(-5f, 0f), new Vector2(3f, 21f));
+            _stageObjects[2] = new StageObject(StageObject.ObjectType.WALL, new Vector2(5f, 0f), new Vector2(3f, 21f));
         }
     }
     public class StageObject
