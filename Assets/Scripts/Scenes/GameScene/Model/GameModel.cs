@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using System;
 
 namespace mecoinpy.Game
 {
@@ -11,6 +12,8 @@ namespace mecoinpy.Game
         StageData StageData{get;}
         //GameObject
         IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject{get;}
+        //プレイヤーの状態
+        IReadOnlyReactiveProperty<GameEnum.PlayerState> PlayerState{get;}
         //引っ張っている方向
         IReadOnlyReactiveProperty<Vector2> PullingDirection{get;}
 
@@ -36,6 +39,8 @@ namespace mecoinpy.Game
         //GameObject
         private ReactiveProperty<MyGameObject> _playerGameObject = new ReactiveProperty<MyGameObject>(default);
         public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerGameObject;
+        //プレイヤーの状態
+        public IReadOnlyReactiveProperty<GameEnum.PlayerState> PlayerState => _playerData.State;
         //ボタンダウンの開始位置
         private Vector2 _mouseStartPosition = Vector2.zero;
         //引っ張っている方向

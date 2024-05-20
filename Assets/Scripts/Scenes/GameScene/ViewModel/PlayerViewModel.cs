@@ -12,6 +12,10 @@ namespace mecoinpy.Game
         //座標
         private Vector2ReactiveProperty _position = new Vector2ReactiveProperty(Vector2.zero);
         public IReadOnlyReactiveProperty<Vector2> PlayerPosition => _position;
+        //ジャンプ中の演出のオンオフ
+        private BoolReactiveProperty _jumping = new BoolReactiveProperty(false);
+        public IReadOnlyReactiveProperty<bool> Jumping => _jumping;
+        
 
         internal PlayerViewModel(GameObject view) : base(view)
         {
@@ -25,6 +29,13 @@ namespace mecoinpy.Game
                 .SubscribeWithState(this, (x, t) =>
                 {
                     t._position.Value = x.Position;
+                });
+            _model.PlayerState
+                .Where(x => x != GameEnum.PlayerState.DEFAULT)
+                .TakeUntilDestroy(_view)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    _jumping.Value = x == GameEnum.PlayerState.JUMPING;
                 });
         }
     }

@@ -51,6 +51,7 @@ namespace mecoinpy.Game
                     if(contactVector.y > 0f)
                     {
                         //着地した。
+                        _state.Value = GameEnum.PlayerState.IDLE;
                         var temp = PhysicsObject.Position + contactVector;
                         PhysicsObject.Position = temp;
                         PhysicsObject.Physics.Grounded();
@@ -71,13 +72,13 @@ namespace mecoinpy.Game
                 _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
                 Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
                         .TakeUntilDestroy(_gameObject)
-                        .SubscribeWithState(this, (x, t) =>
+                        .SubscribeWithState(this, static (x, t) =>
                         {
                             //ジャンプする
-                            _physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
-                            PhysicsObject.Physics.Velocity = _jumpPower;
-                            _jumpPower = Vector2.zero;
-                            _state.Value = GameEnum.PlayerState.JUMPING;
+                            t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
+                            t.PhysicsObject.Physics.Velocity = t._jumpPower;
+                            t._jumpPower = Vector2.zero;
+                            t._state.Value = GameEnum.PlayerState.JUMPING;
                         });
             }
             return false;
