@@ -11,6 +11,9 @@ namespace mecoinpy.Game
             public static readonly Vector2 PlayerPosition = new Vector2(0f, 0f);
             public const float PlayerJumpVelocity= 12f;
         }
+
+        //ジャンプ構え状態の長さ(s)
+        public const float JumpStandbySeconds = 0.3f;
         //重力加速度
         public static readonly float DefaultGravityAcceleration = 9.81f;
 

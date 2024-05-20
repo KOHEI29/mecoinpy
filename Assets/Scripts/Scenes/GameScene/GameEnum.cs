@@ -9,8 +9,9 @@ namespace mecoinpy.Game
         public enum PlayerState
         {
             DEFAULT = -1,
-            IDLE = 0,      //特に何もしていない
-            
+            IDLE = 0,       //特に何もしていない
+            JUMPSTANDBY,    //ジャンプ構え
+            JUMPING,        //ジャンプ中
         }
     }
 }

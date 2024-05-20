@@ -21,6 +21,7 @@ namespace mecoinpy.Game
     }
     public class GameModel : IGameModel
     {
+        //UntilDestroyのTarget用
         private GameObject _gameObject = default;
         //プレイヤーデータ
         private PlayerData _playerData = default;
@@ -46,13 +47,14 @@ namespace mecoinpy.Game
             _gameObject = go;
 
             //データ初期化
-            _playerData = new PlayerData();
+            _playerData = new PlayerData(_gameObject);
             _stageData = new StageData();
 
             _playerGameObject.Value = _playerData.PhysicsObject;
 
             //毎フレームの処理を開始
             Observable.EveryUpdate()
+                    .TakeUntilDestroy(_gameObject)
                     .SubscribeWithState(this, (x, t) => 
                     {
                         t.PhysicsUpdate();
@@ -104,7 +106,7 @@ namespace mecoinpy.Game
             if(PullingDirection.Value.SqrMagnitude() > 0f)
             {
                 //ジャンプ
-                TryJump();
+                _playerData.TryJump(PullingDirection.Value.normalized);
             }
             else
             {

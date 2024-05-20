@@ -31,13 +31,31 @@ namespace mecoinpy.Game
         //揚力
         private float _liftForce = 0f;
         public float LiftForce => _liftForce;
-        //AddPowerされないオブジェクト
-        private bool _isKinematic = false;
-        public bool IsKinematic => _isKinematic;
+        //BodyType.
+        private BodyType _type = BodyType.DEFAULT;
+        public BodyType Type
+        {
+            private get{return _type;}
+            set
+            {
+                _type = value;
+                if(_type == BodyType.STATIC)
+                {
+                    //それまでにかかっていた速度や力をリセット
+                    Velocity = Vector2.zero;
+                    _force = Vector2.zero;
+                }
+            }
+        }
+        //bodytype.kinematic AddPowerされない設定
+        public bool IsKinematic => Type == BodyType.KINEMATIC;
+        //bodytype.static 動かない設定
+        public bool IsStatic => Type == BodyType.STATIC;
         
         //フレーム処理
         public void Update(float time)
         {
+            if(IsStatic) return;
             _acceleration = Force / Mass;
             _acceleration.y -= GameConst.DefaultGravityAcceleration - LiftForce;
             _force = Vector2.zero;
@@ -49,7 +67,7 @@ namespace mecoinpy.Game
         //力を加える
         public void AddForce(Vector2 force)
         {
-            if(IsKinematic) return;
+            if(IsKinematic || IsStatic) return;
 
             _force += force;
         }
@@ -57,6 +75,15 @@ namespace mecoinpy.Game
         public void Grounded()
         {
             Velocity = Vector2.zero;
+        }
+
+
+        public enum BodyType
+        {
+            DEFAULT = -1,
+            DYNAMIC = 0,
+            STATIC,
+            KINEMATIC,
         }
     }
 }

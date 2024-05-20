@@ -10,9 +10,9 @@ namespace mecoinpy.Game
         // Start is called before the first frame update
         void Start()
         {
-           var viewModel = ViewModelProvider.Get<PlayerViewModel>(new PlayerViewModelFactory(gameObject));
+            var viewModel = ViewModelProvider.Get<PlayerViewModel>(new PlayerViewModelFactory(gameObject));
 
-           viewModel.PlayerPosition
+            viewModel.PlayerPosition
                 .Where(x => x != default)
                 .TakeUntilDestroy(this)
                 .SubscribeWithState(this, (x, t) => 

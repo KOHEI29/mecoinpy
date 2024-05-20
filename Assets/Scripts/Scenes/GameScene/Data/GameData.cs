@@ -2,16 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
+using UniRx;
 
 namespace mecoinpy.Game
 {
     //プレイヤーのデータ
     public class PlayerData
     {
+        //UntilDestroyのTarget用
+        private GameObject _gameObject = default;
+
         private PhysicsObject _physicsObject = default;
         public PhysicsObject PhysicsObject => _physicsObject;
         
+        //状態
+        private ReactiveProperty<GameEnum.PlayerState> _state = new ReactiveProperty<GameEnum.PlayerState>(GameEnum.PlayerState.DEFAULT);
+        public IReadOnlyReactiveProperty<GameEnum.PlayerState> State => _state;
+        //貯められているジャンプ力。速度の形で溜まっている
+        private Vector2 _jumpPower = Vector2.zero;
+
         //ジャンプ速度
         private float _jumpVelocity = GameConst.Initialize.PlayerJumpVelocity;
         public float JumpVelocity => _jumpVelocity;
@@ -23,8 +32,10 @@ namespace mecoinpy.Game
         public int JumpBallMax => _jumpBallMax;
 
         //コンストラクタ
-        public PlayerData()
+        public PlayerData(GameObject gameObject)
         {
+            _gameObject = gameObject;
+            _state.Value = GameEnum.PlayerState.IDLE;
             _jumpBall = JumpBallMax;
 
             _physicsObject = new PhysicsObject();
@@ -46,6 +57,28 @@ namespace mecoinpy.Game
                         return true;
                     }
                 }
+            }
+            return false;
+        }
+        //ジャンプを試みる
+        public bool TryJump(Vector2 direction)
+        {
+            if(true)
+            {
+                //ジャンプ構え状態に
+                _state.Value = GameEnum.PlayerState.JUMPSTANDBY;
+                _jumpPower = direction.normalized * JumpVelocity;
+                _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
+                Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
+                        .TakeUntilDestroy(_gameObject)
+                        .SubscribeWithState(this, (x, t) =>
+                        {
+                            //ジャンプする
+                            _physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
+                            PhysicsObject.Physics.Velocity = _jumpPower;
+                            _jumpPower = Vector2.zero;
+                            _state.Value = GameEnum.PlayerState.JUMPING;
+                        });
             }
             return false;
         }
