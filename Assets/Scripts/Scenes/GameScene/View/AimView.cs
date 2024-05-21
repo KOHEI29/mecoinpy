@@ -10,7 +10,6 @@ namespace mecoinpy.Game
 {
     public class AimView : MonoBehaviour
     {
-        [SerializeField]
         private GameObject _wrapper = default;
         [SerializeField]
         private GameObject _aimPartsPrefab = default;
@@ -32,8 +31,7 @@ namespace mecoinpy.Game
             viewModel.Display.TakeUntilDestroy(this)
                 .SubscribeWithState(this, (x, t) => 
                 {
-                    //t._wrapper.SetActive(x);
-                    t._wrapper.SetActive(true);
+                    t._wrapper.SetActive(x);
                 });
             viewModel.PartsTransformObservable
                 .TakeUntilDestroy(this)

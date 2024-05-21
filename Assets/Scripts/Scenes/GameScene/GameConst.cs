@@ -34,6 +34,6 @@ namespace mecoinpy.Game
         //エイムガイドの白いパーツの数
         public const int AimPartsCount = 8;
         //エイムガイドの白いパーツの間隔
-        public const float AimPartsOffset = 0.1f;
+        public const float AimPartsOffset = 0.2f;
     }
 }

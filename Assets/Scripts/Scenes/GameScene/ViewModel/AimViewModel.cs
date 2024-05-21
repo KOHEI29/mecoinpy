@@ -50,12 +50,12 @@ namespace mecoinpy.Game
                             temp.y -= GameConst.DefaultGravityAcceleration * GameConst.AimPartsOffset * i * GameConst.AimPartsOffset * i * 0.5f;
                             t._partsPositions[i] = t._model.PlayerGameObject.Value.Position + temp;
                             //角度の計算
-                            var v = fV;
-                            v.y -= GameConst.DefaultGravityAcceleration * GameConst.AimPartsOffset * i;
-                            if(temp.y == 0f)
-                                t._partsRotation[i] = 0f;
-                            else
-                                t._partsRotation[i] = - v.x / v.y * 45f;
+                            //var v = fV;
+                            //v.y -= GameConst.DefaultGravityAcceleration * GameConst.AimPartsOffset * i;
+                            //if(temp.y == 0f)
+                            //    t._partsRotation[i] = 0f;
+                            //else
+                            //    t._partsRotation[i] = - v.x / v.y * 45f;
                         }
 
                         t._partsTransformObservable.OnNext(Unit.Default);
