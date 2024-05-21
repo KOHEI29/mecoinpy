@@ -8,7 +8,7 @@ namespace mecoinpy.Game
     {
         public class Initialize
         {
-            public static readonly Vector2 PlayerPosition = new Vector2(0f, 0f);
+            public static readonly Vector2 PlayerPosition = new Vector2(0f, -3f);
             public const float PlayerJumpVelocity = 12f;
             public const int PlayerWallJumpMax = 1;
             //エイム中にスローモーションになる時間
@@ -39,5 +39,10 @@ namespace mecoinpy.Game
         public const int AimPartsCount = 8;
         //エイムガイドの白いパーツの間隔
         public const float AimPartsOffset = 0.2f;
+
+        //カメラの最小Y
+        public const float CameraMinY = 1f;
+        //カメラのプレイヤーに対するYオフセット
+        public const float CameraOffsetY = 2f;
     }
 }

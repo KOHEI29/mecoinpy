@@ -47,6 +47,7 @@ namespace mecoinpy.Game
             _jumpBall = JumpBallMax;
 
             _physicsObject = new PhysicsObject();
+            _physicsObject.Position = GameConst.Initialize.PlayerPosition;
             _physicsObject.SetCollider(new AABB(new Vector2(-0.5f, -0.5f), new Vector2(0.5f, 0.5f), _physicsObject));
         }
 
