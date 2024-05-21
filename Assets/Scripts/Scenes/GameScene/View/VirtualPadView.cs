@@ -57,6 +57,7 @@ namespace mecoinpy.Game
                     //スクリーン座標からキャンバス座標に変換。厳格化するならViewModelに持っていく
                     if(RectTransformUtility.ScreenPointToLocalPointInRectangle(t.canvasRectTransform, x, t.canvas.worldCamera, out Vector2 cpos))
                     {
+                        t._ballTransform.localScale = t._viewModel.BallScale;
                         t._ballTransform.anchoredPosition = cpos;
                     }
                 });

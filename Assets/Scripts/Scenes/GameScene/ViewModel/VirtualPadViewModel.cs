@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UniRx;
@@ -12,8 +13,13 @@ namespace mecoinpy.Game
         //リングを表示すべきスクリーン座標
         public Vector2 RingScreenPosition => _model.PullingStartScreenPosition;
         //ボールを表示すべきスクリーン座標
-        private Vector2ReactiveProperty _ballCanvasPosition = new Vector2ReactiveProperty(Vector2.zero);
-        public IReadOnlyReactiveProperty<Vector2> BallScreenPosition => _ballCanvasPosition;
+        private Vector2ReactiveProperty _ballScreenPosition = new Vector2ReactiveProperty(Vector2.zero);
+        public IReadOnlyReactiveProperty<Vector2> BallScreenPosition => _ballScreenPosition;
+        //ボールのスケーリングと回転。座標と同じタイミングで更新するので、通知は不要。
+        private Vector2 _ballScale = Vector2.one;
+        public Vector2 BallScale => _ballScale;
+        private Vector2 _ballRotation = Vector2.zero;
+        public Vector2 BallRotation => _ballRotation;
         //表示するか否か
         private BoolReactiveProperty _display = new BoolReactiveProperty(false);
         public IReadOnlyReactiveProperty<bool> Display => _display;
@@ -32,11 +38,24 @@ namespace mecoinpy.Game
                 });
             _model.PullingVector
                 .TakeUntilDestroy(_view)
-                .SubscribeWithState(this, (x, t) => 
+                .SubscribeWithState(this, static (x, t) => 
                 {
                     if(t.Display.Value)
                     {
-                        t._ballCanvasPosition.Value = t.RingScreenPosition - x;
+                        ////通知する前にボールのスケーリングと回転を計算する。
+                        //var prev = t.BallScreenPosition.Value;
+                        var now = t.RingScreenPosition - x;
+                        //var offset = now - prev;
+                        //Debug.Log($"X is {offset.x}");
+                        //Debug.Log($"Y is {offset.y}");
+                        //if(offset.x == 0)
+                        //    t._ballScale = new Vector2(0.5f, 2f);
+                        //if(offset.y == 0)
+                        //    t._ballScale = new Vector2(2f, 0.5f);
+                        //else
+                        //    t._ballScale = new Vector2(offset.x / offset.y, offset.y / offset.x);
+
+                        t._ballScreenPosition.Value = now;
                     }
                 });
         }
