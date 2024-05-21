@@ -6,7 +6,7 @@ using System;
 
 namespace mecoinpy.Game
 {
-    public interface IGameModel : IModel
+    public partial interface IGameModel : IModel
     {
         //ステージデータ
         StageData StageData{get;}
@@ -19,13 +19,8 @@ namespace mecoinpy.Game
         IReadOnlyReactiveProperty<GameEnum.PlayerState> PlayerState{get;}
         //引っ張っている方向
         IReadOnlyReactiveProperty<Vector2> PullingDirection{get;}
-
-        //ボタン関連の処理。スワイプとタップの判定などはViewModelでやるべき？
-        void OnButtonDown(Vector2 mouse);
-        void OnButton(Vector2 mouse);
-        void OnButtonUp(Vector2 mouse);
     }
-    public class GameModel : IGameModel
+    public partial class GameModel : IGameModel
     {
         //UntilDestroyのTarget用
         private GameObject _gameObject = default;
@@ -65,6 +60,9 @@ namespace mecoinpy.Game
                     .TakeUntilDestroy(_gameObject)
                     .SubscribeWithState(this, (x, t) => 
                     {
+                        //Input処理
+                        t.InputUpdate();
+                        //力学処理
                         t.PhysicsUpdate();
                     });
         }
@@ -84,40 +82,6 @@ namespace mecoinpy.Game
             
             //通知        
             _playerGameObject.SetValueAndForceNotify(_playerData.PhysicsObject);
-        }
-
-
-        //ボタン関連の処理。スワイプとタップの判定などはViewModelでやるべき？
-        public void OnButtonDown(Vector2 mouse)
-        {
-            _mouseStartPosition = mouse;
-        }
-        public void OnButton(Vector2 mouse)
-        {
-            if((_mouseStartPosition - mouse).SqrMagnitude() > GameConst.SwipeThresholdSqr)
-            {
-                _pullingDirection.Value = (_mouseStartPosition - mouse).normalized;
-            }
-            else
-            {
-                _pullingDirection.Value = Vector2.zero;
-            }
-        }
-        public void OnButtonUp(Vector2 mouse)
-        {
-            if(PullingDirection.Value.SqrMagnitude() > 0f)
-            {
-                //ジャンプ
-                _playerData.TryJump(PullingDirection.Value);
-            }
-            else
-            {
-                //ストンプ
-                Debug.Log("Try Stamp");
-                _playerData.TryStomp();
-            }
-            _pullingDirection.Value = Vector2.zero;
-            _mouseStartPosition = default;
         }
     }
 
