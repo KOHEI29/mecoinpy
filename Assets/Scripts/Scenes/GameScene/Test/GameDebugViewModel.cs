@@ -10,7 +10,7 @@ namespace mecoinpy.Game
         private IGameModel _model = default;
 
         //引っ張っている方向
-        public IReadOnlyReactiveProperty<Vector2> PullingDirection => _model.PullingDirection;
+        public IReadOnlyReactiveProperty<Vector2> PullingDirection => _model.PullingVector;
 
         internal GameDebugViewModel(GameObject view) : base(view)
         {

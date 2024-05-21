@@ -31,25 +31,30 @@ namespace mecoinpy.Game
         //ボタン関連の処理。
         private void OnButtonDown(Vector2 mouse)
         {
-            _mouseStartPosition = mouse;
+            _pullingStartScreenPosition = mouse;
+
+            //若干長押しorスワイプ判定な気もするが、一旦即時切り替え
+            _gameState.Value = GameEnum.GameState.AIMING;
         }
         private void OnButton(Vector2 mouse)
         {
-            if((_mouseStartPosition - mouse).SqrMagnitude() > GameConst.SwipeThresholdSqr)
+            if((_pullingStartScreenPosition - mouse).SqrMagnitude() > GameConst.SwipeThresholdSqr)
             {
-                _pullingDirection.Value = (_mouseStartPosition - mouse).normalized;
+                _pullingVector.Value = _pullingStartScreenPosition - mouse;
             }
             else
             {
-                _pullingDirection.Value = Vector2.zero;
+                _pullingVector.Value = Vector2.zero;
             }
         }
         private void OnButtonUp(Vector2 mouse)
         {
-            if(PullingDirection.Value.SqrMagnitude() > 0f)
+            _gameState.Value = GameEnum.GameState.NORMAL;
+
+            if(PullingVector.Value != Vector2.zero)
             {
                 //ジャンプ
-                _playerData.TryJump(PullingDirection.Value);
+                _playerData.TryJump(PullingVector.Value.normalized);
             }
             else
             {
@@ -57,8 +62,8 @@ namespace mecoinpy.Game
                 Debug.Log("Try Stamp");
                 _playerData.TryStomp();
             }
-            _pullingDirection.Value = Vector2.zero;
-            _mouseStartPosition = default;
+            _pullingVector.Value = Vector2.zero;
+            _pullingStartScreenPosition = default;
         }
     }
 }

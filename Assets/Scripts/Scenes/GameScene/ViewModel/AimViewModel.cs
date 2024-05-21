@@ -31,7 +31,7 @@ namespace mecoinpy.Game
             for(int i = 0; i < GameConst.AimPartsCount; i++)
                 _partsPositions[i] = Vector2.zero;
 
-            _model.PullingDirection
+            _model.PullingVector
                 .TakeUntilDestroy(_view)
                 .SubscribeWithState(this, static (x, t) => 
                 {
@@ -43,7 +43,7 @@ namespace mecoinpy.Game
                     {
                         t._display.Value = true;
                         //初速
-                        var fV = x * t._model.PlayerJumpVelocity;
+                        var fV = x.normalized * t._model.PlayerJumpVelocity;
                         for(int i = 0; i < GameConst.AimPartsCount; i++)
                         {
                             var temp = fV * GameConst.AimPartsOffset * i;

@@ -13,12 +13,16 @@ namespace mecoinpy.Game
         //プレイヤーのジャンプ力（エイムの計算に使用）
         float PlayerJumpVelocity{get;}
 
-        //GameObject
+        //GameState
+        IReadOnlyReactiveProperty<GameEnum.GameState> GameState{get;}
+        //プレイヤーObject
         IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject{get;}
         //プレイヤーの状態
         IReadOnlyReactiveProperty<GameEnum.PlayerState> PlayerState{get;}
-        //引っ張っている方向
-        IReadOnlyReactiveProperty<Vector2> PullingDirection{get;}
+        //引っ張り始めのスクリーン座標
+        Vector2 PullingStartScreenPosition{get;}
+        //引っ張っている距離
+        IReadOnlyReactiveProperty<Vector2> PullingVector{get;}
     }
     public partial class GameModel : IGameModel
     {
@@ -34,16 +38,20 @@ namespace mecoinpy.Game
 
         //時間の割合
         private float _timeScale = 1f;
+        //GameState
+        private ReactiveProperty<GameEnum.GameState> _gameState = new ReactiveProperty<GameEnum.GameState>(default);
+        public IReadOnlyReactiveProperty<GameEnum.GameState> GameState => _gameState;
         //GameObject
         private ReactiveProperty<MyGameObject> _playerGameObject = new ReactiveProperty<MyGameObject>(default);
         public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerGameObject;
         //プレイヤーの状態
         public IReadOnlyReactiveProperty<GameEnum.PlayerState> PlayerState => _playerData.State;
-        //ボタンダウンの開始位置
-        private Vector2 _mouseStartPosition = Vector2.zero;
-        //引っ張っている方向
-        private Vector2ReactiveProperty _pullingDirection = new Vector2ReactiveProperty(Vector2.zero);
-        public IReadOnlyReactiveProperty<Vector2> PullingDirection => _pullingDirection;
+        //引っ張り始めのスクリーン座標
+        private Vector2 _pullingStartScreenPosition = Vector2.zero;
+        public Vector2 PullingStartScreenPosition => _pullingStartScreenPosition;
+        //引っ張っている距離
+        private Vector2ReactiveProperty _pullingVector = new Vector2ReactiveProperty(Vector2.zero);
+        public IReadOnlyReactiveProperty<Vector2> PullingVector => _pullingVector;
 
         internal GameModel(GameObject go)
         {
@@ -80,7 +88,7 @@ namespace mecoinpy.Game
 
             }
             
-            //通知        
+            //通知
             _playerGameObject.SetValueAndForceNotify(_playerData.PhysicsObject);
         }
     }
