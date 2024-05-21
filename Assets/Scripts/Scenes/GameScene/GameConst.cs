@@ -11,6 +11,8 @@ namespace mecoinpy.Game
             public static readonly Vector2 PlayerPosition = new Vector2(0f, 0f);
             public const float PlayerJumpVelocity = 12f;
             public const int PlayerWallJumpMax = 1;
+            //エイム中にスローモーションになる時間
+            public const float AimSeconds = 2f;
         }
 
         //ジャンプ構え状態の長さ(s)
@@ -26,6 +28,8 @@ namespace mecoinpy.Game
         public static readonly Vector2 RightWallJumpingVelocity = new Vector2(-1f,2f).normalized;
         //重力加速度
         public const float DefaultGravityAcceleration = 9.81f;
+        //スローモーション中のTimeScale
+        public const float SlowTimeScale = 0.1f;
 
         //タップとスワイプのしきい値（スクリーン座標）
         public const float SwipeThreshold = 0.5f;

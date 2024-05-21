@@ -15,6 +15,10 @@ namespace mecoinpy.Game
 
         //GameState
         IReadOnlyReactiveProperty<GameEnum.GameState> GameState{get;}
+        //タイムスケール
+        float TimeScale{get;}
+        //エイムのスローモーションの残り時間
+        IReadOnlyReactiveProperty<float> AimSlowTimer{get;}
         //プレイヤーObject
         IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject{get;}
         //プレイヤーの状態
@@ -36,11 +40,15 @@ namespace mecoinpy.Game
         //プレイヤーのジャンプ力（エイムの計算に使用）
         public float PlayerJumpVelocity => _playerData.JumpVelocity;
 
-        //時間の割合
-        private float _timeScale = 1f;
         //GameState
         private ReactiveProperty<GameEnum.GameState> _gameState = new ReactiveProperty<GameEnum.GameState>(default);
         public IReadOnlyReactiveProperty<GameEnum.GameState> GameState => _gameState;
+        //タイムスケール
+        private float _timeScale = 1f;
+        public float TimeScale => _timeScale;
+        //エイムのスローモーションの残り時間
+        private FloatReactiveProperty _aimSlowTimer = new FloatReactiveProperty(0f);
+        public IReadOnlyReactiveProperty<float> AimSlowTimer => _aimSlowTimer;
         //GameObject
         private ReactiveProperty<MyGameObject> _playerGameObject = new ReactiveProperty<MyGameObject>(default);
         public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerGameObject;
@@ -70,6 +78,17 @@ namespace mecoinpy.Game
                     {
                         //Input処理
                         t.InputUpdate();
+
+                        //スローモーションタイマー
+                        if(t.AimSlowTimer.Value > 0f)
+                        {
+                            t._aimSlowTimer.Value -= Time.deltaTime;
+                            if(t._aimSlowTimer.Value <= 0f)
+                            {
+                                t.DisableSlowMode();
+                            }
+                        }
+
                         //力学処理
                         t.PhysicsUpdate();
                     });
@@ -90,6 +109,13 @@ namespace mecoinpy.Game
             
             //通知
             _playerGameObject.SetValueAndForceNotify(_playerData.PhysicsObject);
+        }
+
+        //スローモーションの解除
+        private void DisableSlowMode()
+        {
+            _timeScale = 1f;
+            _aimSlowTimer.Value = 0f;
         }
     }
 

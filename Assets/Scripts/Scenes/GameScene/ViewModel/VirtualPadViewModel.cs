@@ -12,6 +12,9 @@ namespace mecoinpy.Game
 
         //リングを表示すべきスクリーン座標
         public Vector2 RingScreenPosition => _model.PullingStartScreenPosition;
+        //リングのスケーリング。スローモーションの制限時間を表す
+        private Vector2ReactiveProperty _ringScaling = new Vector2ReactiveProperty(Vector2.one);
+        public IReadOnlyReactiveProperty<Vector2> RingScaling => _ringScaling;
         //ボールを表示すべきスクリーン座標
         private Vector2ReactiveProperty _ballScreenPosition = new Vector2ReactiveProperty(Vector2.zero);
         public IReadOnlyReactiveProperty<Vector2> BallScreenPosition => _ballScreenPosition;
@@ -36,9 +39,18 @@ namespace mecoinpy.Game
                 {
                     t._display.Value = x == GameEnum.GameState.AIMING;                    
                 });
+            _model.AimSlowTimer
+                .TakeUntilDestroy(_view)
+                .SubscribeWithState(this, (x ,t) => 
+                {
+                    if(x > 1f)
+                        t._ringScaling.Value = Vector2.one;
+                    else
+                        t._ringScaling.Value = new Vector2(x, x);
+                });
             _model.PullingVector
                 .TakeUntilDestroy(_view)
-                .SubscribeWithState(this, static (x, t) => 
+                .SubscribeWithState(this, (x, t) => 
                 {
                     if(t.Display.Value)
                     {

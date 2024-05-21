@@ -10,14 +10,15 @@ namespace mecoinpy.Game
     public class PlayerView : MonoBehaviour
     {
         private IDisposable _rotationDisposable = default;
+        private PlayerViewModel _viewModel = default;
         
         // Start is called before the first frame update
         void Start()
         {
-            var viewModel = ViewModelProvider.Get<PlayerViewModel>(new PlayerViewModelFactory(gameObject));
+            _viewModel = ViewModelProvider.Get<PlayerViewModel>(new PlayerViewModelFactory(gameObject));
 
             //座標の書き換え
-            viewModel.PlayerPosition
+            _viewModel.PlayerPosition
                 .Where(x => x != default)
                 .TakeUntilDestroy(this)
                 .SubscribeWithState(this, (x, t) => 
@@ -26,17 +27,17 @@ namespace mecoinpy.Game
                 });
             
             //ジャンプ中はメッシュを回転させる
-            viewModel.Jumping
+            _viewModel.Jumping
                 .TakeUntilDestroy(this)
                 .SubscribeWithState(this, (x, t) => 
                 {
                     if(x)
                     {
-                        _rotationDisposable = Observable.EveryUpdate()
-                                .TakeUntilDestroy(this)
-                                .SubscribeWithState(this, (x, t) => 
+                        t._rotationDisposable = Observable.EveryUpdate()
+                                .TakeUntilDestroy(t)
+                                .SubscribeWithState(t, (x, tt) => 
                                 {
-                                    t.transform.Rotate(0f, 0f, 2f);
+                                    tt.transform.Rotate(0f, 0f, 2f * tt._viewModel.TimeScale);
                                 });
                     }
                     else

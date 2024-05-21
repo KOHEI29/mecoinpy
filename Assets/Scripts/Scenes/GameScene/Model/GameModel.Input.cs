@@ -35,6 +35,8 @@ namespace mecoinpy.Game
 
             //若干長押しorスワイプ判定な気もするが、一旦即時切り替え
             _gameState.Value = GameEnum.GameState.AIMING;
+            _timeScale = GameConst.SlowTimeScale;
+            _aimSlowTimer.Value = _playerData.AimSeconds;
         }
         private void OnButton(Vector2 mouse)
         {
@@ -50,6 +52,8 @@ namespace mecoinpy.Game
         private void OnButtonUp(Vector2 mouse)
         {
             _gameState.Value = GameEnum.GameState.NORMAL;
+            //スローモーションの解除
+            DisableSlowMode();
 
             if(PullingVector.Value != Vector2.zero)
             {
@@ -59,7 +63,6 @@ namespace mecoinpy.Game
             else
             {
                 //ストンプ
-                Debug.Log("Try Stamp");
                 _playerData.TryStomp();
             }
             _pullingVector.Value = Vector2.zero;

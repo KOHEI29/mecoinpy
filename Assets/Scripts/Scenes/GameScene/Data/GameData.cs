@@ -18,6 +18,10 @@ namespace mecoinpy.Game
         //状態
         private ReactiveProperty<GameEnum.PlayerState> _state = new ReactiveProperty<GameEnum.PlayerState>(GameEnum.PlayerState.DEFAULT);
         public IReadOnlyReactiveProperty<GameEnum.PlayerState> State => _state;
+
+        //エイム中にスローモーションになる時間
+        private float _aimSeconds = GameConst.Initialize.AimSeconds;
+        public float AimSeconds => _aimSeconds;
         //貯められているジャンプ力。速度の形で溜まっている
         private Vector2 _jumpPower = Vector2.zero;
 
@@ -113,7 +117,7 @@ namespace mecoinpy.Game
                 _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
                 Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
                         .TakeUntilDestroy(_gameObject)
-                        .SubscribeWithState(this, static (x, t) =>
+                        .SubscribeWithState(this, (x, t) =>
                         {
                             //ジャンプする
                             t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
@@ -137,7 +141,7 @@ namespace mecoinpy.Game
                 _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
                 Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
                         .TakeUntilDestroy(_gameObject)
-                        .SubscribeWithState(this, static (x, t) =>
+                        .SubscribeWithState(this, (x, t) =>
                         {
                             //ストンプする
                             t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
@@ -159,7 +163,7 @@ namespace mecoinpy.Game
             _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
             Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
                     .TakeUntilDestroy(_gameObject)
-                    .SubscribeWithState(this, static (x, t) =>
+                    .SubscribeWithState(this, (x, t) =>
                     {
                         //ジャンプする
                         t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;

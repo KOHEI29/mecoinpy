@@ -15,6 +15,8 @@ namespace mecoinpy.Game
         //ジャンプ中の演出のオンオフ
         private BoolReactiveProperty _jumping = new BoolReactiveProperty(false);
         public IReadOnlyReactiveProperty<bool> Jumping => _jumping;
+        //タイムスケール
+        public float TimeScale => _model.TimeScale;
 
         internal PlayerViewModel(GameObject view) : base(view)
         {

@@ -49,6 +49,12 @@ namespace mecoinpy.Game
                         t._ballTransform.gameObject.SetActive(false);
                     }
                 });
+            _viewModel.RingScaling
+                .TakeUntilDestroy(this)
+                .SubscribeWithState(this, (x, t) => 
+                {
+                    t._ringTransform.localScale = x;
+                });
             _viewModel.BallScreenPosition
                 .Skip(1)
                 .TakeUntilDestroy(this)

@@ -33,7 +33,7 @@ namespace mecoinpy.Game
 
             _model.PullingVector
                 .TakeUntilDestroy(_view)
-                .SubscribeWithState(this, static (x, t) => 
+                .SubscribeWithState(this, (x, t) => 
                 {
                     if(x == Vector2.zero)
                     {
