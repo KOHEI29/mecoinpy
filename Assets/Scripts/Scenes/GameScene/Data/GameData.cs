@@ -212,4 +212,40 @@ namespace mecoinpy.Game
             ColliderObject.SetCollider(new AABB(-scale*0.5f, scale*0.5f, ColliderObject));
         }
     }
+
+    //果物データ
+    public class FruitsData
+    {
+        private FruitsObject[] _fruitsObjects = default;
+        public FruitsObject[] FruitsObjects => _fruitsObjects;
+
+        public FruitsData()
+        {
+            //***Debug仮データ作成
+            _fruitsObjects = new FruitsObject[1];
+            _fruitsObjects[0] = new FruitsObject(FruitsObject.FruitsType.RED, new Vector2(0f, 3f), 1f);
+        }
+    }
+    public class FruitsObject
+    {
+        public enum FruitsType
+        {
+            DEFAULT = -1,
+            RED = 0,
+            BLUE,
+            YELLOW,
+        }
+        private FruitsType _type = FruitsType.DEFAULT;
+        public FruitsType Type => _type;
+        private ColliderObject _colliderObject = default;
+        public ColliderObject ColliderObject => _colliderObject;
+        public FruitsObject(FruitsType t, Vector2 position, float scale)
+        {
+            _type = t;
+            _colliderObject = new ColliderObject();
+            ColliderObject.Position = position;
+            ColliderObject.Scale = new Vector2(scale, scale);
+            ColliderObject.SetCollider(new Circle(Vector2.zero, scale, ColliderObject));
+        }
+    }
 }

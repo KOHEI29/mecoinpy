@@ -827,6 +827,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 1775326928}
+--- !u!1 &1439260293
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1439260294}
+  - component: {fileID: 1439260295}
+  m_Layer: 0
+  m_Name: Fruits
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1439260294
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439260293}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1439260295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1439260293}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4af1b0d4db5644c13886a3dd8f82418f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _FruitsObjectPrefab: {fileID: 6705869537269888976, guid: 1dbdb7aee5dac4f86b35597fe66ec67f, type: 3}
 --- !u!1 &1591402152
 GameObject:
   m_ObjectHideFlags: 0
@@ -1402,6 +1447,7 @@ SceneRoots:
   - {fileID: 791034706}
   - {fileID: 2063902312}
   - {fileID: 981587070}
+  - {fileID: 1439260294}
   - {fileID: 1099797432}
   - {fileID: 979856569}
   - {fileID: 1884331772}

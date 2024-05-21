@@ -10,6 +10,8 @@ namespace mecoinpy.Game
     {
         //ステージデータ
         StageData StageData{get;}
+        //フルーツデータ
+        FruitsData FruitsData{get;}
         //プレイヤーのジャンプ力（エイムの計算に使用）
         float PlayerJumpVelocity{get;}
 
@@ -37,6 +39,9 @@ namespace mecoinpy.Game
         //ステージデータ
         private StageData _stageData = default;
         public StageData StageData => _stageData;
+        //フルーツデータ
+        private FruitsData _fruitsData = default;
+        public FruitsData FruitsData => _fruitsData;
         //プレイヤーのジャンプ力（エイムの計算に使用）
         public float PlayerJumpVelocity => _playerData.JumpVelocity;
 
@@ -68,6 +73,7 @@ namespace mecoinpy.Game
             //データ初期化
             _playerData = new PlayerData(_gameObject);
             _stageData = new StageData();
+            _fruitsData = new FruitsData();
 
             _playerGameObject.Value = _playerData.PhysicsObject;
 
