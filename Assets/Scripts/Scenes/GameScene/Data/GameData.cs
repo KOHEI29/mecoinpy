@@ -6,6 +6,26 @@ using UniRx;
 
 namespace mecoinpy.Game
 {
+    //1ゲームのデータ
+    public class GameData
+    {
+        //持っている果物
+        private int[] _fruits = new int[(int)FruitsObject.FruitsType.Count];
+        public IReadOnlyCollection<int> Fruits => _fruits;
+        //課題
+        private int[] _require = new int[(int)FruitsObject.FruitsType.Count];
+        public int[] Require => _require;
+
+        public GameData()
+        {
+        }
+        //果物を入手した。
+        public void GetFruits(FruitsObject.FruitsType type)
+        {
+            _fruits[(int)type]++;
+        }
+
+    }
     //プレイヤーのデータ
     public class PlayerData
     {
@@ -50,8 +70,13 @@ namespace mecoinpy.Game
             _physicsObject.Position = GameConst.Initialize.PlayerPosition;
             _physicsObject.SetCollider(new AABB(new Vector2(-0.5f, -0.5f), new Vector2(0.5f, 0.5f), _physicsObject));
         }
-
-        public bool IsGrounded(StageObject[] objects)
+        //オブジェクトとの当たりチェック
+        public bool CheckCollisionWithObject(MyCollider collider)
+        {
+            return PhysicsObject.Collider.CheckCollision(collider);
+        }
+        //接地チェック
+        public bool CheckCollisionWithStage(StageObject[] objects)
         {
             for(int i = 0; i < objects.Length; i++)
             {
@@ -216,14 +241,16 @@ namespace mecoinpy.Game
     //果物データ
     public class FruitsData
     {
-        private FruitsObject[] _fruitsObjects = default;
-        public FruitsObject[] FruitsObjects => _fruitsObjects;
+        private List<FruitsObject> _fruitsObjects = default;
+        public List<FruitsObject> FruitsObjects => _fruitsObjects;
 
         public FruitsData()
         {
             //***Debug仮データ作成
-            _fruitsObjects = new FruitsObject[1];
-            _fruitsObjects[0] = new FruitsObject(FruitsObject.FruitsType.RED, new Vector2(0f, 3f), 1f);
+            _fruitsObjects = new List<FruitsObject>(2);
+            _fruitsObjects.Add(new FruitsObject(FruitsObject.FruitsType.RED, new Vector2(0f, 3f), 1f));
+            _fruitsObjects.Add(new FruitsObject(FruitsObject.FruitsType.BLUE, new Vector2(0f, 4f), 1f));
+            _fruitsObjects.Add(new FruitsObject(FruitsObject.FruitsType.YELLOW, new Vector2(-1f, 4f), 1f));
         }
     }
     public class FruitsObject
@@ -234,7 +261,13 @@ namespace mecoinpy.Game
             RED = 0,
             BLUE,
             YELLOW,
+
+            Count
         }
+        //オブジェクトの削除に使うID
+        private static int _nextId = 0;
+        private int _id = _nextId++;
+        public int Id => _id;
         private FruitsType _type = FruitsType.DEFAULT;
         public FruitsType Type => _type;
         private ColliderObject _colliderObject = default;

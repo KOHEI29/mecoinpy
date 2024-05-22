@@ -8,6 +8,8 @@ namespace mecoinpy.Game
 {
     public partial interface IGameModel : IModel
     {
+        //ゲームデータ
+        GameData GameData{get;}
         //ステージデータ
         StageData StageData{get;}
         //フルーツデータ
@@ -29,11 +31,17 @@ namespace mecoinpy.Game
         Vector2 PullingStartScreenPosition{get;}
         //引っ張っている距離
         IReadOnlyReactiveProperty<Vector2> PullingVector{get;}
+        //非表示にしてほしい果物
+        IReadOnlyReactiveProperty<int> DisableFruits{get;}
     }
     public partial class GameModel : IGameModel
     {
         //UntilDestroyのTarget用
         private GameObject _gameObject = default;
+
+        //ゲームデータ
+        private GameData _gameData = default;
+        public GameData GameData => _gameData;
         //プレイヤーデータ
         private PlayerData _playerData = default;
         //ステージデータ
@@ -65,12 +73,16 @@ namespace mecoinpy.Game
         //引っ張っている距離
         private Vector2ReactiveProperty _pullingVector = new Vector2ReactiveProperty(Vector2.zero);
         public IReadOnlyReactiveProperty<Vector2> PullingVector => _pullingVector;
+        //非表示にしてほしい果物
+        private IntReactiveProperty _disableFruits = new IntReactiveProperty(-1);
+        public IReadOnlyReactiveProperty<int> DisableFruits => _disableFruits;
 
         internal GameModel(GameObject go)
         {
             _gameObject = go;
 
             //データ初期化
+            _gameData = new GameData();
             _playerData = new PlayerData(_gameObject);
             _stageData = new StageData();
             _fruitsData = new FruitsData();
@@ -107,8 +119,22 @@ namespace mecoinpy.Game
             _playerData.PhysicsObject.Physics.Update(time);
 
             //当たり判定
+            //プレイヤーと果物
+            for(int i = 0; i < FruitsData.FruitsObjects.Count; i++)
+            {
+                if(_playerData.CheckCollisionWithObject(FruitsData.FruitsObjects[i].ColliderObject.Collider))
+                {
+                    //果物を入手
+                    GameData.GetFruits(FruitsData.FruitsObjects[i].Type);
+                    //オブジェクトの削除通知。
+                    _disableFruits.Value = _fruitsData.FruitsObjects[i].Id;
+                    //データ削除
+                    _fruitsData.FruitsObjects.RemoveAt(i);
+                }
+            }
+
             //プレイヤーとステージ
-            if(_playerData.IsGrounded(StageData.StageObjects))
+            if(_playerData.CheckCollisionWithStage(StageData.StageObjects))
             {
 
             }

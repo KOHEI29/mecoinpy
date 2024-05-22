@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using UnityEngine;
+using System;
 
 namespace mecoinpy.Game
 {
@@ -9,11 +11,15 @@ namespace mecoinpy.Game
     {
         //Prefab
         [SerializeField]
-        private GameObject _FruitsObjectPrefab = default;
-        //作成したオブジェクト
-        private List<GameObject> _FruitsObjects = new List<GameObject>(4);
+        private GameObject _fruitsObjectPrefab = default;
+        //マテリアル
+        [SerializeField]
+        private Material[] _fruitsMaterials = default;
+
+        //作成したオブジェクト。指定したオブジェクトへの操作のためにDictionaryで保管する。
+        private Dictionary<int, GameObject> _fruitsObjects = new Dictionary<int, GameObject>(4);
         //オブジェクトプール（非表示などされたらここに入れておく。）
-        private Queue<GameObject> _FruitsObjectPool = new Queue<GameObject>(4);
+        private Queue<GameObject> _fruitsObjectPool = new Queue<GameObject>(4);
         // Start is called before the first frame update
         void Start()
         {
@@ -26,21 +32,41 @@ namespace mecoinpy.Game
                 var go = CreateOrDequeue();
                 go.transform.position = data.ColliderObject.Position;
                 go.transform.localScale = new Vector3(data.ColliderObject.Scale.x, data.ColliderObject.Scale.y, 1f);
+                go.GetComponent<Renderer>().material = _fruitsMaterials[(int)data.Type];
+                _fruitsObjects[data.Id] = go;
             }
-
-            //更新（追加でオブジェクトを作る）
+            
+            //購読
+            viewModel.DisableFruits
+                .Where(x => x > -1)
+                .TakeUntilDestroy(this)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    //非表示に
+                    if(t._fruitsObjects.TryGetValue(x, out GameObject go))
+                    {
+                        go.SetActive(false);
+                        t._fruitsObjectPool.Enqueue(go);
+                        t._fruitsObjects.Remove(x);
+                    }
+                    else
+                    {
+                        //非表示にしたいオブジェクトが表示されていない状態。
+                        throw new KeyNotFoundException();
+                    }
+                });
         }
         //プールにあればプールから、なければオブジェクトを作成
         private GameObject CreateOrDequeue()
         {
             GameObject go = default;
-            if(_FruitsObjectPool.TryDequeue(out go))
+            if(_fruitsObjectPool.TryDequeue(out go))
             {
                 return go;
             }
             else
             {
-                go = Instantiate(_FruitsObjectPrefab);
+                go = Instantiate(_fruitsObjectPrefab);
                 //オブジェクト初期化
                 go.transform.SetParent(transform);
                 go.SetActive(true);

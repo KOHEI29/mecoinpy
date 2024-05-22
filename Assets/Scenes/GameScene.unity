@@ -871,7 +871,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4af1b0d4db5644c13886a3dd8f82418f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _FruitsObjectPrefab: {fileID: 6705869537269888976, guid: 1dbdb7aee5dac4f86b35597fe66ec67f, type: 3}
+  _fruitsObjectPrefab: {fileID: 6705869537269888976, guid: 1dbdb7aee5dac4f86b35597fe66ec67f, type: 3}
+  _fruitsMaterials:
+  - {fileID: 2100000, guid: 4c8325c8353eb485f8604b26df1b887c, type: 2}
 --- !u!1 &1591402152
 GameObject:
   m_ObjectHideFlags: 0
