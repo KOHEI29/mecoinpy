@@ -24,6 +24,14 @@ namespace mecoinpy.Game
         {
             _fruits[(int)type]++;
         }
+        //果物をリセットする。
+        public void ResetFruits()
+        {
+            for(int i = 0; i < _fruits.Length; i++)
+            {
+                _fruits[i] = 0;
+            }
+        }
 
     }
     //プレイヤーのデータ
@@ -99,8 +107,8 @@ namespace mecoinpy.Game
                                 PhysicsObject.Physics.Velocity = GameConst.StompBoundVelocity;
                             }
                             _state.Value = GameEnum.PlayerState.IDLE;
+                            return true;
                         }
-                        return true;
                     }
                     else if(contactVector.y > 0f)
                     {
@@ -247,10 +255,12 @@ namespace mecoinpy.Game
         public FruitsData()
         {
             //***Debug仮データ作成
-            _fruitsObjects = new List<FruitsObject>(2);
+            _fruitsObjects = new List<FruitsObject>(5);
             _fruitsObjects.Add(new FruitsObject(FruitsObject.FruitsType.RED, new Vector2(0f, 3f), 1f));
             _fruitsObjects.Add(new FruitsObject(FruitsObject.FruitsType.BLUE, new Vector2(0f, 4f), 1f));
             _fruitsObjects.Add(new FruitsObject(FruitsObject.FruitsType.YELLOW, new Vector2(-1f, 4f), 1f));
+            _fruitsObjects.Add(new FruitsObject(FruitsObject.FruitsType.BLUE, new Vector2(1f, 4f), 1f));
+            _fruitsObjects.Add(new FruitsObject(FruitsObject.FruitsType.YELLOW, new Vector2(1f, 3f), 1f));
         }
     }
     public class FruitsObject

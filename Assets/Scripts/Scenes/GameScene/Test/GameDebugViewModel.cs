@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -11,6 +12,9 @@ namespace mecoinpy.Game
 
         //引っ張っている方向
         public IReadOnlyReactiveProperty<Vector2> PullingDirection => _model.PullingVector;
+        //持っている果物
+        private ReactiveProperty<int[]> _fruits = new ReactiveProperty<int[]>(default);
+        public IReadOnlyReactiveProperty<int[]> Fruits => _fruits;
 
         internal GameDebugViewModel(GameObject view) : base(view)
         {
@@ -18,13 +22,19 @@ namespace mecoinpy.Game
             //本来はSceneManagerなどでしっかりしたGameObjectから作る
             _model = ModelProvider.Get<IGameModel>(new GameModelFactory(_view));
 
-            //_model.GameDebugGameObject
-            //    .Where(x => x != default)
-            //    .TakeUntilDestroy(_view)
-            //    .SubscribeWithState(this, (x, t) =>
-            //    {
-            //        t._position.Value = x.Position;
-            //    });
+            _model.GetFruits
+                .TakeUntilDestroy(_view)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    if(x == FruitsObject.FruitsType.DEFAULT)
+                    {
+                        t._fruits.Value = default;
+                    }
+                    else
+                    {
+                        t._fruits.Value = t._model.GameData.Fruits.ToArray();
+                    }
+                });
         }
     }
 

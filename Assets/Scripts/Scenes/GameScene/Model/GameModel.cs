@@ -31,8 +31,10 @@ namespace mecoinpy.Game
         Vector2 PullingStartScreenPosition{get;}
         //引っ張っている距離
         IReadOnlyReactiveProperty<Vector2> PullingVector{get;}
-        //非表示にしてほしい果物
+        //非表示にしてほしい果物オブジェクト
         IReadOnlyReactiveProperty<int> DisableFruits{get;}
+        //入手したフルーツ
+        IReadOnlyReactiveProperty<FruitsObject.FruitsType> GetFruits{get;}
     }
     public partial class GameModel : IGameModel
     {
@@ -73,9 +75,12 @@ namespace mecoinpy.Game
         //引っ張っている距離
         private Vector2ReactiveProperty _pullingVector = new Vector2ReactiveProperty(Vector2.zero);
         public IReadOnlyReactiveProperty<Vector2> PullingVector => _pullingVector;
-        //非表示にしてほしい果物
+        //非表示にしてほしい果物オブジェクト
         private IntReactiveProperty _disableFruits = new IntReactiveProperty(-1);
         public IReadOnlyReactiveProperty<int> DisableFruits => _disableFruits;
+        //入手したフルーツ
+        private ReactiveProperty<FruitsObject.FruitsType> _getFruits = new ReactiveProperty<FruitsObject.FruitsType>(FruitsObject.FruitsType.DEFAULT);
+        public IReadOnlyReactiveProperty<FruitsObject.FruitsType> GetFruits => _getFruits;
 
         internal GameModel(GameObject go)
         {
@@ -124,19 +129,16 @@ namespace mecoinpy.Game
             {
                 if(_playerData.CheckCollisionWithObject(FruitsData.FruitsObjects[i].ColliderObject.Collider))
                 {
-                    //果物を入手
-                    GameData.GetFruits(FruitsData.FruitsObjects[i].Type);
-                    //オブジェクトの削除通知。
-                    _disableFruits.Value = _fruitsData.FruitsObjects[i].Id;
-                    //データ削除
-                    _fruitsData.FruitsObjects.RemoveAt(i);
+                    //果物に触れた時の処理
+                    CollideFruits(i);
                 }
             }
 
             //プレイヤーとステージ
             if(_playerData.CheckCollisionWithStage(StageData.StageObjects))
             {
-
+                //地面に着地した時の処理（壁ジャンプした時は呼ばない）
+                Grounded();
             }
             
             //通知
@@ -148,6 +150,34 @@ namespace mecoinpy.Game
         {
             _timeScale = 1f;
             _aimSlowTimer.Value = 0f;
+        }
+        //地面に着地した時の処理（壁ジャンプした時は呼ばない）
+        private void Grounded()
+        {
+            //必要数を満たしていればジュースを作る
+            if(false)
+            {
+
+            }
+            else
+            {
+                //果物を失う
+                GameData.ResetFruits();
+                //通知                
+                _getFruits.Value = FruitsObject.FruitsType.DEFAULT;
+            }
+        }
+        //果物に触れた時の処理
+        private void CollideFruits(int value)
+        {
+            //果物を入手
+            GameData.GetFruits(FruitsData.FruitsObjects[value].Type);
+            //入手通知
+            _getFruits.SetValueAndForceNotify(FruitsData.FruitsObjects[value].Type);
+            //オブジェクトの削除通知。
+            _disableFruits.Value = _fruitsData.FruitsObjects[value].Id;
+            //データ削除
+            _fruitsData.FruitsObjects.RemoveAt(value);
         }
     }
 

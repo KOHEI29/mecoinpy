@@ -39,6 +39,16 @@ namespace mecoinpy.Game
         public const int AimPartsCount = 8;
         //エイムガイドの白いパーツの間隔
         public const float AimPartsOffset = 0.2f;
+        //所持果物とプレイヤーのオフセット
+        public const float PossessFruitsOffsetWithPlayer = -1f;
+        //所持果物の大きさ
+        public const float PossessFruitsSize = 0.5f;
+        //所持果物の間隔
+        public const float PossessFruitsSpaceX = 0.15f;
+        public const float PossessFruitsSpaceY = 0.15f;
+        //所持果物の大きさ＋間隔
+        public const float PossessFruitsOffsetX = PossessFruitsSize + PossessFruitsSpaceX;
+        public const float PossessFruitsOffsetY = PossessFruitsSize + PossessFruitsSpaceY;
 
         //カメラの最小Y
         public const float CameraMinY = 1f;

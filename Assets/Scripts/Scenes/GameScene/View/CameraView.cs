@@ -22,7 +22,8 @@ namespace mecoinpy.Game
                 .TakeUntilDestroy(this)
                 .SubscribeWithState(this, (x, t) => 
                 {
-                    t.transform.DOMoveY(x, 0.1f);
+                    t.transform.DOMoveY(x, 0.1f)
+                                .SetLink(gameObject);
                 });
         }
     }

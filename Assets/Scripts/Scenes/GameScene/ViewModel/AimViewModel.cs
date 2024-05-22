@@ -14,8 +14,8 @@ namespace mecoinpy.Game
         private BoolReactiveProperty _display = new BoolReactiveProperty(false);
         public IReadOnlyReactiveProperty<bool> Display => _display;
         //それぞれのパーツの座標とZ回転
-        private Vector2[] _partsPositions = new Vector2[GameConst.AimPartsCount];
-        public IReadOnlyCollection<Vector2> PartsPositions => _partsPositions;
+        private Vector3[] _partsPositions = new Vector3[GameConst.AimPartsCount];
+        public IReadOnlyCollection<Vector3> PartsPositions => _partsPositions;
         private float[] _partsRotation = new float[GameConst.AimPartsCount];
         public IReadOnlyCollection<float> PartsRotation => _partsRotation;
         //パーツのTransformの更新通知
@@ -48,7 +48,8 @@ namespace mecoinpy.Game
                         {
                             var temp = fV * GameConst.AimPartsOffset * i;
                             temp.y -= GameConst.DefaultGravityAcceleration * GameConst.AimPartsOffset * i * GameConst.AimPartsOffset * i * 0.5f;
-                            t._partsPositions[i] = t._model.PlayerGameObject.Value.Position + temp;
+                            temp += t._model.PlayerGameObject.Value.Position;
+                            t._partsPositions[i] = new Vector3(temp.x ,temp.y, -1f);
                             //角度の計算
                             //var v = fV;
                             //v.y -= GameConst.DefaultGravityAcceleration * GameConst.AimPartsOffset * i;
