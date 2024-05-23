@@ -14,6 +14,8 @@ namespace mecoinpy.Game
         StageData StageData{get;}
         //フルーツデータ
         FruitsData FruitsData{get;}
+        //敵データ
+        EnemyData EnemyData{get;}
         //プレイヤーのジャンプ力（エイムの計算に使用）
         float PlayerJumpVelocity{get;}
 
@@ -35,6 +37,8 @@ namespace mecoinpy.Game
         IReadOnlyReactiveProperty<int> DisableFruits{get;}
         //入手したフルーツ
         IReadOnlyReactiveProperty<FruitsObject.FruitsType> GetFruits{get;}
+        //非表示にしてほしい敵オブジェクト
+        IReadOnlyReactiveProperty<int> DisableEnemy{get;}
     }
     public partial class GameModel : IGameModel
     {
@@ -52,6 +56,10 @@ namespace mecoinpy.Game
         //フルーツデータ
         private FruitsData _fruitsData = default;
         public FruitsData FruitsData => _fruitsData;
+        //敵データ
+        private EnemyData _enemyData = default;
+        public EnemyData EnemyData => _enemyData;
+
         //プレイヤーのジャンプ力（エイムの計算に使用）
         public float PlayerJumpVelocity => _playerData.JumpVelocity;
 
@@ -81,6 +89,9 @@ namespace mecoinpy.Game
         //入手したフルーツ
         private ReactiveProperty<FruitsObject.FruitsType> _getFruits = new ReactiveProperty<FruitsObject.FruitsType>(FruitsObject.FruitsType.DEFAULT);
         public IReadOnlyReactiveProperty<FruitsObject.FruitsType> GetFruits => _getFruits;
+        //非表示にしてほしい敵オブジェクト
+        private IntReactiveProperty _disableEnemy = new IntReactiveProperty(-1);
+        public IReadOnlyReactiveProperty<int> DisableEnemy => _disableEnemy;
 
         internal GameModel(GameObject go)
         {
@@ -91,6 +102,7 @@ namespace mecoinpy.Game
             _playerData = new PlayerData(_gameObject);
             _stageData = new StageData();
             _fruitsData = new FruitsData();
+            _enemyData = new EnemyData();
 
             _playerGameObject.Value = _playerData.PhysicsObject;
 

@@ -291,4 +291,43 @@ namespace mecoinpy.Game
             ColliderObject.SetCollider(new Circle(Vector2.zero, scale, ColliderObject));
         }
     }
+    //敵データ
+    public class EnemyData
+    {
+        private List<EnemyObject> _enemyObjects = default;
+        public List<EnemyObject> EnemyObjects => _enemyObjects;
+
+        public EnemyData()
+        {
+            //***Debug仮データ作成
+            _enemyObjects = new List<EnemyObject>(1);
+            _enemyObjects.Add(new EnemyObject(EnemyObject.EnemyType.BIRD, new Vector2(-2f, 0f), 1f));
+        }
+    }
+    public class EnemyObject
+    {
+        public enum EnemyType
+        {
+            DEFAULT = -1,
+            BIRD = 0,
+
+            Count
+        }
+        //オブジェクトの削除に使うID
+        private static int _nextId = 0;
+        private int _id = _nextId++;
+        public int Id => _id;
+        private EnemyType _type = EnemyType.DEFAULT;
+        public EnemyType Type => _type;
+        private PhysicsObject _physicsObject = default;
+        public PhysicsObject PhysicsObject => _physicsObject;
+        public EnemyObject(EnemyType t, Vector2 position, float scale)
+        {
+            _type = t;
+            _physicsObject = new PhysicsObject();
+            _physicsObject.Position = position;
+            _physicsObject.Scale = new Vector3(1f, 0.6f, 1f);
+            _physicsObject.SetCollider(new AABB(new Vector2(-0.6f, -0.5f), new Vector2(0.6f, 0.5f), _physicsObject));
+        }
+    }
 }
