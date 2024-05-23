@@ -139,10 +139,30 @@ namespace mecoinpy.Game
             //プレイヤーと果物
             for(int i = 0; i < FruitsData.FruitsObjects.Count; i++)
             {
-                if(_playerData.CheckCollisionWithObject(FruitsData.FruitsObjects[i].ColliderObject.Collider))
+                if(_playerData.CheckCollisionWithItem(FruitsData.FruitsObjects[i].ColliderObject.Collider))
                 {
                     //果物に触れた時の処理
                     CollideFruits(i);
+                }
+            }
+            //プレイヤーと敵
+            for(int i = 0; i < EnemyData.EnemyObjects.Count; i++)
+            {
+                var state = _playerData.CheckCollisionWithEnemy(EnemyData.EnemyObjects[i].PhysicsObject.Collider);
+                if(state != GameEnum.EnemyCollisionState.NOT)
+                {
+                    if(state == GameEnum.EnemyCollisionState.TREAD)
+                    {
+                        //踏んだ時
+                        TreadEnemy(i);
+                    }
+                    else
+                    {
+                        //踏めなかった時
+                        HitEnemy();
+                    }
+                    //同時に踏んだりしないように
+                    break;
                 }
             }
 
@@ -190,6 +210,27 @@ namespace mecoinpy.Game
             _disableFruits.Value = _fruitsData.FruitsObjects[value].Id;
             //データ削除
             _fruitsData.FruitsObjects.RemoveAt(value);
+        }
+        //敵を踏んだ時の処理
+        private void TreadEnemy(int value)
+        {
+            //オブジェクトの削除通知。
+            _disableEnemy.Value = _enemyData.EnemyObjects[value].Id;
+            //データ削除
+            _enemyData.EnemyObjects.RemoveAt(value);
+        }
+        //敵に当たってしまった時の処理
+        private void HitEnemy()
+        {
+            //ダメージを受ける
+            if(_gameData.Damaged())
+            {
+                //生きている
+            }
+            else
+            {
+                //ゲームオーバー
+            }
         }
     }
 

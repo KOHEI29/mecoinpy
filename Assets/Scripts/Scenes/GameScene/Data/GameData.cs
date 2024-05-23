@@ -9,6 +9,9 @@ namespace mecoinpy.Game
     //1ゲームのデータ
     public class GameData
     {
+        //体力
+        private int _health = GameConst.Initialize.Health;
+        public int Health => _health;
         //持っている果物
         private int[] _fruits = new int[(int)FruitsObject.FruitsType.Count];
         public IReadOnlyCollection<int> Fruits => _fruits;
@@ -18,6 +21,11 @@ namespace mecoinpy.Game
 
         public GameData()
         {
+        }
+        //ダメージを受けた
+        public bool Damaged()
+        {
+            return --_health > 0;
         }
         //果物を入手した。
         public void GetFruits(FruitsObject.FruitsType type)
@@ -52,6 +60,8 @@ namespace mecoinpy.Game
         public float AimSeconds => _aimSeconds;
         //貯められているジャンプ力。速度の形で溜まっている
         private Vector2 _jumpPower = Vector2.zero;
+        //無敵かどうか
+        private bool _invincible = false;
 
         //壁ジャンプをした回数
         private int _wallJumpCount = 0;
@@ -78,10 +88,55 @@ namespace mecoinpy.Game
             _physicsObject.Position = GameConst.Initialize.PlayerPosition;
             _physicsObject.SetCollider(new AABB(new Vector2(-0.5f, -0.5f), new Vector2(0.5f, 0.5f), _physicsObject));
         }
-        //オブジェクトとの当たりチェック
-        public bool CheckCollisionWithObject(MyCollider collider)
+        //アイテム類との当たりチェック。触れたか否かのみ
+        public bool CheckCollisionWithItem(MyCollider collider)
         {
             return PhysicsObject.Collider.CheckCollision(collider);
+        }
+        //敵との当たりチェック。上からなら踏めるがそれ以外ならダメージ
+        public GameEnum.EnemyCollisionState CheckCollisionWithEnemy(MyCollider collider)
+        {
+            if(PhysicsObject.Collider.CheckCollision(collider, out Vector2 contactVector))
+            {
+                if(contactVector.y < 0f)
+                {
+                    //踏んだ。
+                    //壁ジャンプの回数リセット
+                    _wallJumpCount = 0;
+                    var temp = PhysicsObject.Position - contactVector;
+                    PhysicsObject.Position = temp;
+                    PhysicsObject.Physics.Grounded();
+                    //真上にジャンプ
+                    Jump(GameConst.EnemyTreadVelocity);
+                    return GameEnum.EnemyCollisionState.TREAD;
+                }
+                //無敵かどうかを調べる
+                else if(!_invincible)
+                {
+                    //壁ジャンプの回数リセット
+                    _wallJumpCount = 0;
+                    var temp = PhysicsObject.Position - contactVector;
+                    PhysicsObject.Position = temp;
+                    PhysicsObject.Physics.Grounded();
+                    //無敵に
+                    _invincible = true;
+                    if(collider.GameObject.Position.x > this.PhysicsObject.Position.x)
+                    {
+                        //左から当たった
+                        //進行方向の反対に飛ばされる
+                        Blown(GameConst.EnemyHitLeftVelocity);
+                        return GameEnum.EnemyCollisionState.HIT;
+                    }
+                    else
+                    {
+                        //右から当たった
+                        //進行方向の反対に飛ばされる
+                        Blown(GameConst.EnemyHitRightVelocity);
+                        return GameEnum.EnemyCollisionState.HIT;
+                    }
+                }
+            }
+            return GameEnum.EnemyCollisionState.NOT;
         }
         //接地チェック
         public bool CheckCollisionWithStage(StageObject[] objects)
@@ -140,30 +195,45 @@ namespace mecoinpy.Game
             }
             return false;
         }
-        //ジャンプを試みる
-        public bool TryJump(Vector2 direction)
+        //ジャンプする
+        public void Jump(Vector2 velocity)
         {
-            if(true)
-            {
-                //ジャンプ構え状態に
-                _state.Value = GameEnum.PlayerState.JUMPSTANDBY;
-                _jumpPower = direction * JumpVelocity;
-                _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
-                Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
-                        .TakeUntilDestroy(_gameObject)
-                        .SubscribeWithState(this, (x, t) =>
-                        {
-                            //ジャンプする
-                            t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
-                            t.PhysicsObject.Physics.Velocity = t._jumpPower;
-                            t._jumpPower = Vector2.zero;
-                            t._state.Value = GameEnum.PlayerState.JUMPING;
-                            //壁ジャンプの回数リセット
-                            t._wallJumpCount = 0;
-                        });
-                return true;
-            }
-            return false;
+            //ジャンプ構え状態に
+            _state.Value = GameEnum.PlayerState.JUMPSTANDBY;
+            _jumpPower = velocity;
+            _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
+            Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
+                    .TakeUntilDestroy(_gameObject)
+                    .SubscribeWithState(this, (x, t) =>
+                    {
+                        //ジャンプする
+                        t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
+                        t.PhysicsObject.Physics.Velocity = t._jumpPower;
+                        t._jumpPower = Vector2.zero;
+                        t._state.Value = GameEnum.PlayerState.JUMPING;
+                        //壁ジャンプの回数リセット
+                        t._wallJumpCount = 0;
+                    });
+        }
+        //飛ばされる
+        public void Blown(Vector2 velocity)
+        {
+            //被ダメ状態に
+            _state.Value = GameEnum.PlayerState.DAMAGED;
+            _jumpPower = velocity;
+            _physicsObject.Physics.Type = MyPhysics.BodyType.STATIC;
+            Observable.Timer(TimeSpan.FromSeconds(GameConst.JumpStandbySeconds), Scheduler.MainThreadIgnoreTimeScale)
+                    .TakeUntilDestroy(_gameObject)
+                    .SubscribeWithState(this, (x, t) =>
+                    {
+                        //ジャンプする
+                        t._physicsObject.Physics.Type = MyPhysics.BodyType.DYNAMIC;
+                        t.PhysicsObject.Physics.Velocity = t._jumpPower;
+                        t._jumpPower = Vector2.zero;
+                        t._state.Value = GameEnum.PlayerState.JUMPING;
+                        //壁ジャンプの回数リセット
+                        t._wallJumpCount = 0;
+                    });
         }
         //ストンプを試みる
         public bool TryStomp()

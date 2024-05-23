@@ -6,6 +6,7 @@ namespace mecoinpy.Game
 {
     public class GameConst
     {
+        //初期化データ
         public class Initialize
         {
             public static readonly Vector2 PlayerPosition = new Vector2(0f, -3f);
@@ -13,6 +14,8 @@ namespace mecoinpy.Game
             public const int PlayerWallJumpMax = 1;
             //エイム中にスローモーションになる時間
             public const float AimSeconds = 2f;
+            //体力
+            public const int Health = 2;
         }
 
         //ジャンプ構え状態の長さ(s)
@@ -21,6 +24,12 @@ namespace mecoinpy.Game
         public static readonly Vector2 StompVelocity = new Vector2(0, -500f);
         //ストンプ着地の跳ね上がり速度
         public static readonly Vector2 StompBoundVelocity = new Vector2(0, 5f);
+        //敵を踏んだ時の跳ね上がり速度
+        public static readonly Vector2 EnemyTreadVelocity = new Vector2(0, 7f);
+        //敵に左から当たった時の飛ばされる速度
+        public static readonly Vector2 EnemyHitLeftVelocity = new Vector2(-5f, 3f);
+        //敵に右から当たった時の飛ばされる速度
+        public static readonly Vector2 EnemyHitRightVelocity = new Vector2(5f, 3f);
         //壁ジャンプの速度
         public const float PlayerWallJumpVelocity = 8f;
         //壁ジャンプの方向

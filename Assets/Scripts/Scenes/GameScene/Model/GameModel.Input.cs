@@ -58,7 +58,7 @@ namespace mecoinpy.Game
             if(PullingVector.Value != Vector2.zero)
             {
                 //ジャンプ
-                _playerData.TryJump(PullingVector.Value.normalized);
+                _playerData.Jump(PullingVector.Value.normalized * _playerData.JumpVelocity);
             }
             else
             {

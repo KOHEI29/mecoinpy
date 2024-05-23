@@ -23,6 +23,15 @@ namespace mecoinpy.Game
             JUMPING,        //ジャンプ中
             STOMPSTANDBY,   //ストンプ構え
             STOMPING,       //ストンプ中
+            DAMAGED,        //被ダメ中
+        }
+        //敵との接触状態。受け渡す用
+        public enum EnemyCollisionState
+        {
+            DEFAULT = -1,
+            NOT = 0,        //触れていない
+            TREAD,          //踏んだ
+            HIT             //当たったが踏めなかった
         }
     }
 }
