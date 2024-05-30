@@ -72,6 +72,14 @@ namespace mecoinpy.Game
         public const float RequireBalloonBaseY = 150f;
         //課題の吹き出しが減っているのが見える割合。増やすとすぐ減る
         public const float RequireBalloonVisibleRatio = 0.9f;
+        //吹き出しのフィルの色（課題未達成）
+        public static readonly Color RequireBalloonColorStill = new Color(0f, 0f, 0f, 137f/255f);
+        //吹き出しのフィルの色（課題達成済み）
+        public static readonly Color RequireBalloonColorReady = new Color(0f, 1f, 41f/255f, 137f/255f);
+        //吹き出しの右下のテキスト（課題達成）
+        public static readonly string RequireBalloonTextReady = "READY!";
+        //吹き出しの右下のテキスト（ボーナス中）
+        public static readonly string RequireBalloonTextBonus = "BONUS\nSERVICE";
 
         //カメラの最小Y
         public const float CameraMinY = 1f;

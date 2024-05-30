@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,9 +25,12 @@ namespace mecoinpy.Game
         //プール
         private Queue<Image> _fruitsPool = new Queue<Image>();
 
-        //制限時間
+        //制限時間用の吹き出しのフィル
         [SerializeField]
         private Image _fillBalloon = default;
+        //吹き出しの右下に出るテキスト
+        [SerializeField]
+        private TextMeshProUGUI _balloonText = default;
 
         //表示状況
         private Dictionary<FruitsObject.FruitsType, int> _fruitsDictionary = new Dictionary<FruitsObject.FruitsType, int>();
@@ -76,6 +80,18 @@ namespace mecoinpy.Game
                 .SubscribeWithState(this, (x, t) =>
                 {
                     t._fillBalloon.fillAmount = x;
+                });
+            viewModel.BalloonFillColor
+                .TakeUntilDestroy(this)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    t._fillBalloon.color = x;
+                });
+            viewModel.BalloonText
+                .TakeUntilDestroy(this)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    t._balloonText.SetText(x);
                 });
         }
 

@@ -17,6 +17,12 @@ namespace mecoinpy.Game
         //制限時間の割合
         private FloatReactiveProperty _timelimitRatio = new FloatReactiveProperty(1f);
         public IReadOnlyReactiveProperty<float> TimelimitRatio => _timelimitRatio;
+        //吹き出しのフィルの色
+        private ColorReactiveProperty _balloonFillColor = new ColorReactiveProperty(GameConst.RequireBalloonColorStill);
+        public IReadOnlyReactiveProperty<Color> BalloonFillColor => _balloonFillColor;
+        //吹き出しの右下のテキスト
+        private StringReactiveProperty _balloonText = new StringReactiveProperty("");
+        public IReadOnlyReactiveProperty<string> BalloonText => _balloonText;
 
         internal RequireViewModel(GameObject view) : base(view)
         {
@@ -27,14 +33,38 @@ namespace mecoinpy.Game
             _require.SetValueAndForceNotify(_model.GameData.Require.ToArray());
 
             _model.NextRequire
+                .TakeUntilDestroy(_view)
                 .SubscribeWithState(this, (x, t) => 
                 {
                     t._require.SetValueAndForceNotify(t._model.GameData.Require.ToArray());
                 });
             _model.TimeLimitTimer
+                .TakeUntilDestroy(_view)
                 .SubscribeWithState(this, (x, t) => 
                 {
                     t._timelimitRatio.Value = 1f - (x / (t._model.TimeLimitMax * GameConst.RequireBalloonVisibleRatio));
+                });
+            _model.RequireState
+                .TakeUntilDestroy(_view)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    if(x == GameEnum.RequireState.STILL)
+                    {
+                        t._balloonFillColor.Value = GameConst.RequireBalloonColorStill;
+                        t._balloonText.Value = "";
+                    }
+                    else
+                    {
+                        t._balloonFillColor.Value = GameConst.RequireBalloonColorReady;
+                        if(x == GameEnum.RequireState.READY)
+                        {
+                            t._balloonText.Value = GameConst.RequireBalloonTextReady;
+                        }
+                        else
+                        {
+                            t._balloonText.Value = GameConst.RequireBalloonTextBonus;
+                        }
+                    }
                 });
         }
     }

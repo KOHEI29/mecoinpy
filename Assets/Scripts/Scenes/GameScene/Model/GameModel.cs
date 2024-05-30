@@ -21,6 +21,8 @@ namespace mecoinpy.Game
 
         //GameState
         IReadOnlyReactiveProperty<GameEnum.GameState> GameState{get;}
+        //課題の状況
+        IReadOnlyReactiveProperty<GameEnum.RequireState> RequireState{get;}
         //タイムスケール
         float TimeScale{get;}
         //エイムのスローモーションの残り時間
@@ -72,8 +74,10 @@ namespace mecoinpy.Game
         public float PlayerJumpVelocity => _playerData.JumpVelocity;
 
         //GameState
-        private ReactiveProperty<GameEnum.GameState> _gameState = new ReactiveProperty<GameEnum.GameState>(default);
+        private ReactiveProperty<GameEnum.GameState> _gameState = new ReactiveProperty<GameEnum.GameState>(GameEnum.GameState.DEFAULT);
         public IReadOnlyReactiveProperty<GameEnum.GameState> GameState => _gameState;
+        //課題の状況
+        public IReadOnlyReactiveProperty<GameEnum.RequireState> RequireState => _gameData.RequireState;
         //タイムスケール
         private float _timeScale = 1f;
         public float TimeScale => _timeScale;
@@ -226,7 +230,7 @@ namespace mecoinpy.Game
         private void Grounded()
         {
             //必要数を満たしていればジュースを作る
-            if(GameData.IsClear.Value)
+            if(RequireState.Value > GameEnum.RequireState.STILL)
             {
                 //課題をクリアした
                 _gameData.ClearRequire();

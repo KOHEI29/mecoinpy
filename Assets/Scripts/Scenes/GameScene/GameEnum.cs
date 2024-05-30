@@ -7,6 +7,7 @@ namespace mecoinpy.Game
 {
     public class GameEnum
     {
+        //ゲームの状態
         public enum GameState
         {
             DEFAULT = -1,
@@ -16,6 +17,15 @@ namespace mecoinpy.Game
             PAUSE,          //一時停止中
             GAMEOVER,       //ゲームオーバー
         }
+        //課題の状態
+        public enum RequireState
+        {
+            DEFAULT = -2,
+            STILL = -1,     //未達成
+            READY = 0,      //準備完了
+            BONUS,          //課題より多く集めている
+        }
+        
         public enum PlayerState
         {
             DEFAULT = -1,

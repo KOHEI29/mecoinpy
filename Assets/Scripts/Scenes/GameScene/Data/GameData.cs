@@ -21,9 +21,9 @@ namespace mecoinpy.Game
         //制限時間最大値
         private float _timeLimitMax = 0f;
         public float TimeLimitMax => _timeLimitMax;
-        //課題をクリアしているかどうか
-        private BoolReactiveProperty _isClear = new BoolReactiveProperty(false);
-        public IReadOnlyReactiveProperty<bool> IsClear => _isClear;
+        //課題の状況
+        private ReactiveProperty<GameEnum.RequireState> _requireState = new ReactiveProperty<GameEnum.RequireState>(GameEnum.RequireState.DEFAULT);
+        public IReadOnlyReactiveProperty<GameEnum.RequireState> RequireState => _requireState;
         //課題をクリアした回数
         private int _countClear = 0;
         public int CountClear => _countClear;
@@ -40,14 +40,18 @@ namespace mecoinpy.Game
         public void GetFruits(FruitsObject.FruitsType type)
         {
             _fruits[(int)type]++;
-            if(!IsClear.Value)
+            if(RequireState.Value == GameEnum.RequireState.STILL)
             {
                 for(int i = 0; i < _require.Length; i++)
                 {
                     if(_require[i] > _fruits[i])
                         return;
                 }
-                _isClear.Value = true;
+                _requireState.Value = GameEnum.RequireState.READY;
+            }
+            else if(RequireState.Value > GameEnum.RequireState.STILL)
+            {
+                _requireState.Value++;
             }
         }
         //果物をリセットする。
@@ -69,7 +73,7 @@ namespace mecoinpy.Game
             //***Debug仮データ作成
             _require = new int[]{UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3)};
             _timeLimitMax = GameConst.Initialize.TimelimitMax;
-            _isClear.Value = false;
+            _requireState.Value = GameEnum.RequireState.STILL;
         }
     }
     //プレイヤーのデータ
