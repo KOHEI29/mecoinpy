@@ -226,9 +226,18 @@ namespace mecoinpy.Game
         private void Grounded()
         {
             //必要数を満たしていればジュースを作る
-            if(false)
+            if(GameData.IsClear.Value)
             {
-
+                //課題をクリアした
+                _gameData.ClearRequire();
+                //演出
+                _gameState.Value = GameEnum.GameState.JUICING;
+                //***本来、演出の後にすべき↓↓
+                _gameData.NextRequire();
+                _timeLimitTimer.Value = TimeLimitMax;
+                _nextRequire.OnNext(Unit.Default);
+                //NORMALorAIMING
+                _gameState.Value = GameEnum.GameState.NORMAL;
             }
             else
             {
@@ -236,11 +245,6 @@ namespace mecoinpy.Game
                 GameData.ResetFruits();
                 //通知                
                 _getFruits.Value = FruitsObject.FruitsType.DEFAULT;
-
-                //***Debug接地中にずっと課題を更新
-                _gameData.NextRequire();
-                _timeLimitTimer.Value = TimeLimitMax;
-                _nextRequire.OnNext(Unit.Default);
             }
         }
         //果物に触れた時の処理

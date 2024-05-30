@@ -34,7 +34,7 @@ namespace mecoinpy.Game
             _model.TimeLimitTimer
                 .SubscribeWithState(this, (x, t) => 
                 {
-                    t._timelimitRatio.Value = x / t._model.TimeLimitMax;
+                    t._timelimitRatio.Value = 1f - (x / (t._model.TimeLimitMax * GameConst.RequireBalloonVisibleRatio));
                 });
         }
     }

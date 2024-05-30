@@ -39,7 +39,7 @@ namespace mecoinpy.Game
             viewModel.Require
                 .Where(x => x != default)
                 .TakeUntilDestroy(this)
-                .SubscribeWithState(this, static (x, t) =>
+                .SubscribeWithState(this, (x, t) =>
                 {
                     //後片付け
                     for(int i = 0; i < t._fruitsObjects.Count; i++)

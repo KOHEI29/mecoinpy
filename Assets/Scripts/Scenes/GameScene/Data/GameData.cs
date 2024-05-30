@@ -21,6 +21,12 @@ namespace mecoinpy.Game
         //制限時間最大値
         private float _timeLimitMax = 0f;
         public float TimeLimitMax => _timeLimitMax;
+        //課題をクリアしているかどうか
+        private BoolReactiveProperty _isClear = new BoolReactiveProperty(false);
+        public IReadOnlyReactiveProperty<bool> IsClear => _isClear;
+        //課題をクリアした回数
+        private int _countClear = 0;
+        public int CountClear => _countClear;
 
         public GameData()
         {
@@ -34,6 +40,15 @@ namespace mecoinpy.Game
         public void GetFruits(FruitsObject.FruitsType type)
         {
             _fruits[(int)type]++;
+            if(!IsClear.Value)
+            {
+                for(int i = 0; i < _require.Length; i++)
+                {
+                    if(_require[i] > _fruits[i])
+                        return;
+                }
+                _isClear.Value = true;
+            }
         }
         //果物をリセットする。
         public void ResetFruits()
@@ -43,12 +58,18 @@ namespace mecoinpy.Game
                 _fruits[i] = 0;
             }
         }
+        //課題をクリアした
+        public void ClearRequire()
+        {
+            _countClear++;
+        }
         //課題を作る
         public void NextRequire()
         {
             //***Debug仮データ作成
             _require = new int[]{UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3)};
             _timeLimitMax = GameConst.Initialize.TimelimitMax;
+            _isClear.Value = false;
         }
     }
     //プレイヤーのデータ

@@ -70,6 +70,8 @@ namespace mecoinpy.Game
         public const float RequireFruitsOffsetY = RequireFruitsSize + RequireFruitsSpaceY;
         //課題果物の吹き出しの基準Y
         public const float RequireBalloonBaseY = 150f;
+        //課題の吹き出しが減っているのが見える割合。増やすとすぐ減る
+        public const float RequireBalloonVisibleRatio = 0.9f;
 
         //カメラの最小Y
         public const float CameraMinY = 1f;

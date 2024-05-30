@@ -12,6 +12,7 @@ namespace mecoinpy.Game
             DEFAULT = -1,
             NORMAL = 0,     //通常
             AIMING,         //狙い中
+            JUICING,        //ジュース演出中
             PAUSE,          //一時停止中
             GAMEOVER,       //ゲームオーバー
         }
