@@ -18,12 +18,21 @@ namespace mecoinpy.Game
         //体力
         public IReadOnlyReactiveProperty<int> Health => _model.Health;
 
+        //課題
+        private ReactiveProperty<int[]> _require = new ReactiveProperty<int[]>(default);
+        public IReadOnlyReactiveProperty<int[]> Require => _require;
+        //制限時間の割合
+
         internal GameDebugViewModel(GameObject view) : base(view)
         {
             //***Debug
             //本来はSceneManagerなどでしっかりしたGameObjectから作る
             _model = ModelProvider.Get<IGameModel>(new GameModelFactory(_view));
 
+            //初期化
+            _require.SetValueAndForceNotify(_model.GameData.Require.ToArray());
+
+            
             _model.GetFruits
                 .TakeUntilDestroy(_view)
                 .SubscribeWithState(this, (x, t) =>
@@ -36,6 +45,11 @@ namespace mecoinpy.Game
                     {
                         t._fruits.Value = t._model.GameData.Fruits.ToArray();
                     }
+                });
+            _model.NextRequire
+                .SubscribeWithState(this, (x, t) => 
+                {
+                    t._require.SetValueAndForceNotify(t._model.GameData.Require.ToArray());
                 });
         }
     }

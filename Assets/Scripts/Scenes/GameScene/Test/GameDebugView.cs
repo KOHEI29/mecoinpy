@@ -14,6 +14,8 @@ namespace mecoinpy.Game
         private TextMeshProUGUI[] _fruitCount = default;
         [SerializeField]
         private TextMeshProUGUI _health = default;
+        [SerializeField]
+        private TextMeshProUGUI[] _reqCount = default;
         // Start is called before the first frame update
         void Start()
         {
@@ -46,6 +48,13 @@ namespace mecoinpy.Game
                 .SubscribeWithState(this, (x, t) => 
                 {
                     t._health.SetText("HP:{0}", x);
+                });
+            viewModel.Require
+                .TakeUntilDestroy(this)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    for(int i = 0; i < x.Length; i++)
+                        t._reqCount[i].SetText("{0}", x[i]);
                 });
         }
     }

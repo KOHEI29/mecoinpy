@@ -85,8 +85,8 @@ namespace mecoinpy.Game
         //果物を追加
         private void AddFruits(FruitsObject.FruitsType type)
         {
-            var go = CreateOrDequeue();
-            _fruitsObjects.Add(go);
+            var img = CreateOrDequeue();
+            _fruitsObjects.Add(img);
 
             //Viewで配列を作成している。厳格化するならViewModelに移動させる。
             if(_fruitsDictionary.ContainsKey(type))

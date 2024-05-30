@@ -6,7 +6,7 @@ using UniRx;
 
 namespace mecoinpy.Game
 {
-    //1ゲームのデータ
+    //ゲーム中のデータ
     public class GameData
     {
         //体力
@@ -17,7 +17,10 @@ namespace mecoinpy.Game
         public IReadOnlyCollection<int> Fruits => _fruits;
         //課題
         private int[] _require = new int[(int)FruitsObject.FruitsType.Count];
-        public int[] Require => _require;
+        public IReadOnlyCollection<int> Require => _require;
+        //制限時間最大値
+        private float _timeLimitMax = 0f;
+        public float TimeLimitMax => _timeLimitMax;
 
         public GameData()
         {
@@ -40,7 +43,13 @@ namespace mecoinpy.Game
                 _fruits[i] = 0;
             }
         }
-
+        //課題を作る
+        public void NextRequire()
+        {
+            //***Debug仮データ作成
+            _require = new int[]{UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3)};
+            _timeLimitMax = GameConst.Initialize.TimelimitMax;
+        }
     }
     //プレイヤーのデータ
     public class PlayerData

@@ -25,6 +25,10 @@ namespace mecoinpy.Game
         float TimeScale{get;}
         //エイムのスローモーションの残り時間
         IReadOnlyReactiveProperty<float> AimSlowTimer{get;}
+        //制限時間最大値
+        float TimeLimitMax{get;}
+        //制限時間タイマー
+        IReadOnlyReactiveProperty<float> TimeLimitTimer{get;}
         //プレイヤーObject
         IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject{get;}
         //体力
@@ -41,6 +45,8 @@ namespace mecoinpy.Game
         IReadOnlyReactiveProperty<FruitsObject.FruitsType> GetFruits{get;}
         //非表示にしてほしい敵オブジェクト
         IReadOnlyReactiveProperty<int> DisableEnemy{get;}
+        //課題が作成されたことを知らせるObservable
+        IObservable<Unit> NextRequire{get;}
     }
     public partial class GameModel : IGameModel
     {
@@ -74,6 +80,11 @@ namespace mecoinpy.Game
         //エイムのスローモーションの残り時間
         private FloatReactiveProperty _aimSlowTimer = new FloatReactiveProperty(0f);
         public IReadOnlyReactiveProperty<float> AimSlowTimer => _aimSlowTimer;
+        //制限時間最大値
+        public float TimeLimitMax => _gameData.TimeLimitMax;
+        //制限時間タイマー
+        private FloatReactiveProperty _timeLimitTimer = new FloatReactiveProperty(0f);
+        public IReadOnlyReactiveProperty<float> TimeLimitTimer => _timeLimitTimer;
         //GameObject
         private ReactiveProperty<MyGameObject> _playerGameObject = new ReactiveProperty<MyGameObject>(default);
         public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerGameObject;
@@ -96,6 +107,9 @@ namespace mecoinpy.Game
         //非表示にしてほしい敵オブジェクト
         private IntReactiveProperty _disableEnemy = new IntReactiveProperty(-1);
         public IReadOnlyReactiveProperty<int> DisableEnemy => _disableEnemy;
+        //課題が作成されたことを知らせるObservable
+        private Subject<Unit> _nextRequire = new Subject<Unit>();
+        public IObservable<Unit> NextRequire => _nextRequire.TakeUntilDestroy(_gameObject);
 
         internal GameModel(GameObject go)
         {
@@ -110,6 +124,10 @@ namespace mecoinpy.Game
 
             _playerGameObject.Value = _playerData.PhysicsObject;
 
+            //課題を作成する
+            _gameData.NextRequire();
+            _timeLimitTimer.Value = TimeLimitMax;
+
             //毎フレームの処理を開始
             Observable.EveryUpdate()
                     .TakeUntilDestroy(_gameObject)
@@ -117,21 +135,44 @@ namespace mecoinpy.Game
                     {
                         //Input処理
                         t.InputUpdate();
-
-                        //スローモーションタイマー
-                        if(t.AimSlowTimer.Value > 0f)
-                        {
-                            t._aimSlowTimer.Value -= Time.deltaTime;
-                            if(t._aimSlowTimer.Value <= 0f)
-                            {
-                                t.DisableSlowMode();
-                            }
-                        }
+                        
+                        //タイマーの更新
+                        t.TimerUpdate();
 
                         //力学処理
                         t.PhysicsUpdate();
                     });
         }
+        //タイマーの更新
+        private void TimerUpdate()
+        {
+            //課題タイマー
+            if(TimeLimitTimer.Value > 0f)
+            {
+                _timeLimitTimer.Value -= Time.deltaTime;
+                if(_timeLimitTimer.Value <= 0f)
+                {
+                    //時間オーバー！
+                    Debug.Log("TimeOver!!");
+                }
+            }
+            //スローモーションタイマー
+            if(AimSlowTimer.Value > 0f)
+            {
+                _aimSlowTimer.Value -= Time.deltaTime;
+                if(_aimSlowTimer.Value <= 0f)
+                {
+                    DisableSlowMode();
+                }
+            }
+        }
+        //スローモーションの解除
+        private void DisableSlowMode()
+        {
+            _timeScale = 1f;
+            _aimSlowTimer.Value = 0f;
+        }
+
         //毎フレーム行う力学的処理
         private void PhysicsUpdate()
         {
@@ -181,12 +222,6 @@ namespace mecoinpy.Game
             _playerGameObject.SetValueAndForceNotify(_playerData.PhysicsObject);
         }
 
-        //スローモーションの解除
-        private void DisableSlowMode()
-        {
-            _timeScale = 1f;
-            _aimSlowTimer.Value = 0f;
-        }
         //地面に着地した時の処理（壁ジャンプした時は呼ばない）
         private void Grounded()
         {
@@ -201,6 +236,11 @@ namespace mecoinpy.Game
                 GameData.ResetFruits();
                 //通知                
                 _getFruits.Value = FruitsObject.FruitsType.DEFAULT;
+
+                //***Debug接地中にずっと課題を更新
+                _gameData.NextRequire();
+                _timeLimitTimer.Value = TimeLimitMax;
+                _nextRequire.OnNext(Unit.Default);
             }
         }
         //果物に触れた時の処理

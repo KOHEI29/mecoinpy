@@ -14,6 +14,8 @@ namespace mecoinpy.Game
             public const int PlayerWallJumpMax = 1;
             //エイム中にスローモーションになる時間
             public const float AimSeconds = 2f;
+            //制限時間
+            public const float TimelimitMax = 20f;
             //体力
             public const int Health = 2;
         }
@@ -58,6 +60,16 @@ namespace mecoinpy.Game
         //所持果物の大きさ＋間隔
         public const float PossessFruitsOffsetX = PossessFruitsSize + PossessFruitsSpaceX;
         public const float PossessFruitsOffsetY = PossessFruitsSize + PossessFruitsSpaceY;
+        //課題果物の大きさ
+        public const float RequireFruitsSize = 70f;
+        //課題果物の感覚
+        public const float RequireFruitsSpaceX = 5f;
+        public const float RequireFruitsSpaceY = 5f;
+        //課題果物の大きさ＋間隔
+        public const float RequireFruitsOffsetX = RequireFruitsSize + RequireFruitsSpaceX;
+        public const float RequireFruitsOffsetY = RequireFruitsSize + RequireFruitsSpaceY;
+        //課題果物の吹き出しの基準Y
+        public const float RequireBalloonBaseY = 150f;
 
         //カメラの最小Y
         public const float CameraMinY = 1f;
