@@ -15,6 +15,8 @@ namespace mecoinpy.Game
         //持っている果物
         private ReactiveProperty<int[]> _fruits = new ReactiveProperty<int[]>(default);
         public IReadOnlyReactiveProperty<int[]> Fruits => _fruits;
+        //体力
+        public IReadOnlyReactiveProperty<int> Health => _model.Health;
 
         internal GameDebugViewModel(GameObject view) : base(view)
         {

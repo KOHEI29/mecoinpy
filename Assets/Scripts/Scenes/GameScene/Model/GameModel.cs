@@ -27,6 +27,8 @@ namespace mecoinpy.Game
         IReadOnlyReactiveProperty<float> AimSlowTimer{get;}
         //プレイヤーObject
         IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject{get;}
+        //体力
+        IReadOnlyReactiveProperty<int> Health{get;}
         //プレイヤーの状態
         IReadOnlyReactiveProperty<GameEnum.PlayerState> PlayerState{get;}
         //引っ張り始めのスクリーン座標
@@ -75,6 +77,8 @@ namespace mecoinpy.Game
         //GameObject
         private ReactiveProperty<MyGameObject> _playerGameObject = new ReactiveProperty<MyGameObject>(default);
         public IReadOnlyReactiveProperty<MyGameObject> PlayerGameObject => _playerGameObject;
+        //体力
+        public IReadOnlyReactiveProperty<int> Health => _gameData.Health;
         //プレイヤーの状態
         public IReadOnlyReactiveProperty<GameEnum.PlayerState> PlayerState => _playerData.State;
         //引っ張り始めのスクリーン座標

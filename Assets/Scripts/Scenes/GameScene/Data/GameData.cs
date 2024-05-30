@@ -10,8 +10,8 @@ namespace mecoinpy.Game
     public class GameData
     {
         //体力
-        private int _health = GameConst.Initialize.Health;
-        public int Health => _health;
+        private IntReactiveProperty _health = new IntReactiveProperty(GameConst.Initialize.Health);
+        public IReadOnlyReactiveProperty<int> Health => _health;
         //持っている果物
         private int[] _fruits = new int[(int)FruitsObject.FruitsType.Count];
         public IReadOnlyCollection<int> Fruits => _fruits;
@@ -25,7 +25,7 @@ namespace mecoinpy.Game
         //ダメージを受けた
         public bool Damaged()
         {
-            return --_health > 0;
+            return --_health.Value > 0;
         }
         //果物を入手した。
         public void GetFruits(FruitsObject.FruitsType type)
