@@ -86,8 +86,10 @@ namespace mecoinpy.Game
         public static readonly Color RequireClearColor = new Color(132f/255f, 132f/255f, 132f/255f);
 
         //カメラの最小Y
-        public const float CameraMinY = 1f;
+        public const float CameraMinY = -5f;
         //カメラのプレイヤーに対するYオフセット
         public const float CameraOffsetY = 2f;
+        //モンスターのプレイヤーに対するYオフセット
+        public const float MonsterOffsetY = -12f;
     }
 }
