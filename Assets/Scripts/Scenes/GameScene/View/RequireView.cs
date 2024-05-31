@@ -75,6 +75,13 @@ namespace mecoinpy.Game
                     //行の数に応じて全体を上下に動かして中央揃えにする。
                     t._fruitsParent.anchoredPosition = new Vector2(0f, GameConst.RequireBalloonBaseY + (line-1) * GameConst.RequireFruitsOffsetY * 0.5f);
                 });
+            viewModel.ChangeColorOrder
+                .Where(x => x > -1)
+                .TakeUntilDestroy(this)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    t._fruitsObjects[x].color = GameConst.RequireClearColor;
+                });
             viewModel.TimelimitRatio
                 .TakeUntilDestroy(this)
                 .SubscribeWithState(this, (x, t) =>

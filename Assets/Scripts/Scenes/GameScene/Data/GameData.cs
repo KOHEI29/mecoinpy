@@ -15,6 +15,8 @@ namespace mecoinpy.Game
         //持っている果物
         private int[] _fruits = new int[(int)FruitsObject.FruitsType.Count];
         public IReadOnlyCollection<int> Fruits => _fruits;
+        //余分に取っている果物の数。課題の達成には関係なし。
+        private int _bonusFruits = 0;
         //課題
         private int[] _require = new int[(int)FruitsObject.FruitsType.Count];
         public IReadOnlyCollection<int> Require => _require;
@@ -36,23 +38,44 @@ namespace mecoinpy.Game
         {
             return --_health.Value > 0;
         }
-        //果物を入手した。
-        public void GetFruits(FruitsObject.FruitsType type)
+        //果物を入手した。課題が進んだら何番目の課題をクリアしたかを返す
+        public int GetFruits(FruitsObject.FruitsType type)
         {
+            int result = -1;
             _fruits[(int)type]++;
             if(RequireState.Value == GameEnum.RequireState.STILL)
             {
                 for(int i = 0; i < _require.Length; i++)
                 {
                     if(_require[i] > _fruits[i])
-                        return;
+                        break;
+                    if(i == _require.Length - 1)
+                    {
+                        //余分の果物をボーナスに変換する
+                        _requireState.Value = GameEnum.RequireState.READY + _bonusFruits;
+                        _bonusFruits = 0;
+                    }
                 }
-                _requireState.Value = GameEnum.RequireState.READY;
+                //何番目の課題が進んだかを調べる
+                if(_fruits[(int)type] <= _require[(int)type])
+                {
+                    for(int i = 0; i < _require.Length; i++)
+                    {
+                        if(i < (int)type)
+                            result += _require[i];
+                        else
+                        {
+                            result += _fruits[(int)type];
+                            break;
+                        }
+                    }
+                }
             }
             else if(RequireState.Value > GameEnum.RequireState.STILL)
             {
                 _requireState.Value++;
             }
+            return result;
         }
         //果物をリセットする。
         public void ResetFruits()
@@ -61,6 +84,8 @@ namespace mecoinpy.Game
             {
                 _fruits[i] = 0;
             }
+            //余分の果物の数をリセット
+            _bonusFruits = 0;
         }
         //課題をクリアした
         public void ClearRequire()

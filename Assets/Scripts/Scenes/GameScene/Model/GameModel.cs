@@ -23,6 +23,8 @@ namespace mecoinpy.Game
         IReadOnlyReactiveProperty<GameEnum.GameState> GameState{get;}
         //課題の状況
         IReadOnlyReactiveProperty<GameEnum.RequireState> RequireState{get;}
+        //達成した課題のオーダー
+        IReadOnlyReactiveProperty<int> ClearRequireOrder{get;}
         //タイムスケール
         float TimeScale{get;}
         //エイムのスローモーションの残り時間
@@ -78,6 +80,9 @@ namespace mecoinpy.Game
         public IReadOnlyReactiveProperty<GameEnum.GameState> GameState => _gameState;
         //課題の状況
         public IReadOnlyReactiveProperty<GameEnum.RequireState> RequireState => _gameData.RequireState;
+        //達成した課題のオーダー
+        private IntReactiveProperty _clearRequireOrder = new IntReactiveProperty(-1);
+        public IReadOnlyReactiveProperty<int> ClearRequireOrder => _clearRequireOrder;
         //タイムスケール
         private float _timeScale = 1f;
         public float TimeScale => _timeScale;
@@ -255,7 +260,7 @@ namespace mecoinpy.Game
         private void CollideFruits(int value)
         {
             //果物を入手
-            GameData.GetFruits(FruitsData.FruitsObjects[value].Type);
+            _clearRequireOrder.SetValueAndForceNotify(GameData.GetFruits(FruitsData.FruitsObjects[value].Type));
             //入手通知
             _getFruits.SetValueAndForceNotify(FruitsData.FruitsObjects[value].Type);
             //オブジェクトの削除通知。

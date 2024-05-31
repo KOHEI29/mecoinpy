@@ -14,6 +14,8 @@ namespace mecoinpy.Game
         //課題
         private ReactiveProperty<int[]> _require = new ReactiveProperty<int[]>(default);
         public IReadOnlyReactiveProperty<int[]> Require => _require;
+        //達成した課題のオーダー（画像を灰色に変えるため
+        public IReadOnlyReactiveProperty<int> ChangeColorOrder => _model.ClearRequireOrder;
         //制限時間の割合
         private FloatReactiveProperty _timelimitRatio = new FloatReactiveProperty(1f);
         public IReadOnlyReactiveProperty<float> TimelimitRatio => _timelimitRatio;

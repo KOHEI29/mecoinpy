@@ -80,6 +80,8 @@ namespace mecoinpy.Game
         public static readonly string RequireBalloonTextReady = "READY!";
         //吹き出しの右下のテキスト（ボーナス中）
         public static readonly string RequireBalloonTextBonus = "BONUS\nSERVICE";
+        //達成した課題の色
+        public static readonly Color RequireClearColor = new Color(132f/255f, 132f/255f, 132f/255f);
 
         //カメラの最小Y
         public const float CameraMinY = 1f;
