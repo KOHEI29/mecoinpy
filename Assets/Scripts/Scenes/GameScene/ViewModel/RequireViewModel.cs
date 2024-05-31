@@ -25,6 +25,9 @@ namespace mecoinpy.Game
         //吹き出しの右下のテキスト
         private StringReactiveProperty _balloonText = new StringReactiveProperty("");
         public IReadOnlyReactiveProperty<string> BalloonText => _balloonText;
+        //ボーナスの数字
+        private IntReactiveProperty _bonusNumber = new IntReactiveProperty(0);
+        public IReadOnlyReactiveProperty<int> BonusNumber => _bonusNumber;
 
         internal RequireViewModel(GameObject view) : base(view)
         {
@@ -54,6 +57,7 @@ namespace mecoinpy.Game
                     {
                         t._balloonFillColor.Value = GameConst.RequireBalloonColorStill;
                         t._balloonText.Value = "";
+                        _bonusNumber.Value = 0;
                     }
                     else
                     {
@@ -65,6 +69,7 @@ namespace mecoinpy.Game
                         else
                         {
                             t._balloonText.Value = GameConst.RequireBalloonTextBonus;
+                            _bonusNumber.Value = (int)x;
                         }
                     }
                 });

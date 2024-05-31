@@ -31,9 +31,9 @@ namespace mecoinpy.Game
         //吹き出しの右下に出るテキスト
         [SerializeField]
         private TextMeshProUGUI _balloonText = default;
-
-        //表示状況
-        private Dictionary<FruitsObject.FruitsType, int> _fruitsDictionary = new Dictionary<FruitsObject.FruitsType, int>();
+        //ボーナスの数字パーツ
+        [SerializeField]
+        private RequireViewBonusNumber _bonusNumber = default;
         
         // Start is called before the first frame update
         void Start()
@@ -99,6 +99,20 @@ namespace mecoinpy.Game
                 .SubscribeWithState(this, (x, t) =>
                 {
                     t._balloonText.SetText(x);
+                });
+            viewModel.BonusNumber
+                .TakeUntilDestroy(this)
+                .SubscribeWithState(this, (x, t) =>
+                {
+                    if(x <= 0)
+                        t._bonusNumber.Disable();
+                    else
+                    {
+                        if(!t._bonusNumber.gameObject.activeSelf)
+                            t._bonusNumber.Display(x);
+                        else
+                            t._bonusNumber.ChangeNumber(x);
+                    }
                 });
         }
 

@@ -70,6 +70,8 @@ namespace mecoinpy.Game
                         }
                     }
                 }
+                //課題を進めない果物だった場合、ボーナスに追加する
+                if(result == -1) _bonusFruits++;
             }
             else if(RequireState.Value > GameEnum.RequireState.STILL)
             {
@@ -96,7 +98,8 @@ namespace mecoinpy.Game
         public void NextRequire()
         {
             //***Debug仮データ作成
-            _require = new int[]{UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3)};
+            //_require = new int[]{UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3),UnityEngine.Random.Range(0,3)};
+            _require = new int[]{1,0,0};
             _timeLimitMax = GameConst.Initialize.TimelimitMax;
             _requireState.Value = GameEnum.RequireState.STILL;
         }
