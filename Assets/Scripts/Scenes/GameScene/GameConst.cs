@@ -76,6 +76,8 @@ namespace mecoinpy.Game
         public static readonly Color RequireBalloonColorStill = new Color(0f, 0f, 0f, 137f/255f);
         //吹き出しのフィルの色（課題達成済み）
         public static readonly Color RequireBalloonColorReady = new Color(0f, 1f, 41f/255f, 137f/255f);
+        //吹き出しをギリギリモードにする割合
+        public const float RequireBalloonRunningOutRatio = 0.75f;
         //吹き出しの右下のテキスト（課題達成）
         public static readonly string RequireBalloonTextReady = "READY!";
         //吹き出しの右下のテキスト（ボーナス中）

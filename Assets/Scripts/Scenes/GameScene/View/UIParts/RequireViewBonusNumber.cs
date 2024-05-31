@@ -59,9 +59,7 @@ namespace mecoinpy
         public void Disable()
         {
             _shakeSequence?.Kill();
-            _shakeSequence = default;
             _winkSequence?.Kill();
-            _winkSequence = default;
 
             gameObject.SetActive(false);
         }

@@ -25,6 +25,9 @@ namespace mecoinpy.Game
         //プール
         private Queue<Image> _fruitsPool = new Queue<Image>();
 
+        //吹き出しの時間ギリギリアニメーション部分
+        [SerializeField]
+        private RequireViewBalloon _balloon = default;
         //制限時間用の吹き出しのフィル
         [SerializeField]
         private Image _fillBalloon = default;
@@ -87,6 +90,10 @@ namespace mecoinpy.Game
                 .SubscribeWithState(this, (x, t) =>
                 {
                     t._fillBalloon.fillAmount = x;
+                    if(x > GameConst.RequireBalloonRunningOutRatio)
+                        t._balloon.RunningOut();
+                    else
+                        t._balloon.Normal();
                 });
             viewModel.BalloonFillColor
                 .TakeUntilDestroy(this)
@@ -108,6 +115,9 @@ namespace mecoinpy.Game
                         t._bonusNumber.Disable();
                     else
                     {
+                        //時間ギリギリモードを解除
+                        t._balloon.Normal();
+
                         if(!t._bonusNumber.gameObject.activeSelf)
                             t._bonusNumber.Display(x);
                         else
